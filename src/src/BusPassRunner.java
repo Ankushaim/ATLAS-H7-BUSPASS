@@ -1,3 +1,5 @@
+package projectH7;
+
 import java.util.Scanner;
 
 public class BusPassRunner {
@@ -13,15 +15,17 @@ public class BusPassRunner {
         while(true) {
             Scanner input = new Scanner(System.in);
             int choice = input.nextInt();
-            String userId;
-            String password;
+
             Authentication authCheck = new Authentication();
+            Scanner cred = new Scanner(System.in);
 
             switch (choice) {
                 case 1:
                     System.out.println("Sign in to continue to ATS Portal");
-                    userId = input.nextLine();
-                    password = input.nextLine();
+                    System.out.print("UserId:");
+                    String userId = cred.nextLine();
+                    System.out.print("Password:");
+                    String password = cred.nextLine();
                     if (authCheck.checkCredentials(userId, password, "admin")) {
                         System.out.println("Welcome Admin");
                     }
