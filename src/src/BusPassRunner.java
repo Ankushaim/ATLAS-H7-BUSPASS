@@ -17,15 +17,19 @@ public class BusPassRunner {
             int choice = input.nextInt();
 
             Authentication authCheck = new Authentication();
-            Scanner cred = new Scanner(System.in);
+            Scanner credential_input = new Scanner(System.in);
+            
+            String userId;
+            String password;
+            
 
             switch (choice) {
                 case 1:
                     System.out.println("Sign in to continue to ATS Portal");
                     System.out.print("UserId:");
-                    String userId = cred.nextLine();
+                    userId = credential_input.nextLine();
                     System.out.print("Password:");
-                    String password = cred.nextLine();
+                    password = credential_input.nextLine();
                     if (authCheck.checkCredentials(userId, password, "admin")) {
                         System.out.println("Welcome Admin");
                     }
@@ -35,9 +39,11 @@ public class BusPassRunner {
                     }
                     break;
                 case 2:
-                    System.out.println("Sign in to continue to ATS Portal");
-                    userId = input.nextLine();
-                    password = input.nextLine();
+                	System.out.println("Sign in to continue to ATS Portal");
+                    System.out.print("UserId:");
+                    userId = credential_input.nextLine();
+                    System.out.print("Password:");
+                    password = credential_input.nextLine();
                     if (authCheck.checkCredentials(userId, password, "user")) {
                         System.out.println("Welcome User_Name");
                     }
