@@ -25,15 +25,15 @@ public class AdminFactory {
     static void printOptionsAdmin() {
         System.out.println();
         System.out.print("1. View Requests: " + "\t");
-        System.out.print("2. Appoint/Change Bus Driver: "+ "\t");
+        System.out.print("2. Appoint/Change Bus Driver: "+ "\t"); // ankush
         System.out.println("3. Generate Report: "+ "\t");
-        System.out.print("4. Add Remove Routes: " + "\t");
-        System.out.print("5. Change Bus type on Routes: " + "\t");
-        System.out.println("6. Assign Available Bus on Route: " + "\t");
-        System.out.print("7. View Vehicle List of different Type: " + "\t");
-        System.out.print("8. Register a Bus to Company: " + "\t");
-        System.out.println("9. To previous Menu: " + "\t");
-        System.out.println("10. To Logout: " + "\t");
+        System.out.print("4. Add Remove Routes: " + "\t"); // Priyank
+        System.out.print("5. Change Bus type on Routes: " + "\t"); // J needs to be done
+        System.out.println("6. Assign Available Bus on Route: " + "\t"); // almost done J
+        System.out.print("7. View Vehicle List of different Type: " + "\t"); // almost done J
+        System.out.print("8. Register a Bus to Company: " + "\t"); // Done working
+        System.out.println("9. To previous Menu: " + "\t"); // Done
+        System.out.println("10. To Logout: " + "\t"); // Done
     }
 
     static void pressAnyKeyToContinue()
