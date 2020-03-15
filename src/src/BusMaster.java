@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class BusMaster {
-
-    //	boolean AddBusInRoute(String route){
     public void AddBusInRoute(String route) throws SQLException{
         JdbcConnect jbc = new JdbcConnect();
         if(jbc.connect() != null)
