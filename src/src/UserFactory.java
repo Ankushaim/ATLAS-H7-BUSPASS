@@ -4,9 +4,8 @@ import java.sql.Statement;
 import java.util.Scanner;
 
 public class UserFactory {
-    String userName;
     String userId;
-    String Name = null;
+    String userName = null;
 
     UserFactory(String userId) {
         JdbcConnect jbc = new JdbcConnect();
@@ -14,17 +13,16 @@ public class UserFactory {
             String sql = "select user_name from user_info where login = '" + userId + "'";
             try (Statement stmt = jbc.connect().createStatement();
                  ResultSet rs = stmt.executeQuery(sql)) {
-                Name = rs.getString("user_name");
+                this.userName = rs.getString("user_name");
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
         }
-        this.userName = Name;
         this.userId = userId;
-        view_controller();
+        view_controller_user();
     }
 
-    static void printOptions() {
+    static void printOptionsUser() {
         System.out.println();
         System.out.print("1. Edit or Change details: " + "\t");
         System.out.print("2. View all routes: "+ "\t");
@@ -38,7 +36,7 @@ public class UserFactory {
 
     static void pressAnyKeyToContinue()
     {
-        System.out.println("Press Enter key to continue...");
+        System.out.println("Press Enter/Return key to continue...");
         try
         {
             System.in.read();
@@ -47,8 +45,8 @@ public class UserFactory {
         {}
     }
 
-    void view_controller() {
-        System.out.println("Welcome " + Name);
+    void view_controller_user() {
+        System.out.println("Welcome " + userName);
 
         User calling_user = new User(userId);
 
@@ -61,7 +59,7 @@ public class UserFactory {
         System.out.println("5. Request for new route: ");
         System.out.println("6. Print your pass: ");
         System.out.println("7. go to previous Menu: ");*/
-        printOptions();
+        printOptionsUser();
         boolean c = true;
 
         while (c) {
@@ -71,17 +69,18 @@ public class UserFactory {
             switch (choice) {
                 case 1:
                     calling_user.updateUserDetails();
-                    printOptions();
+                    pressAnyKeyToContinue();
+                    printOptionsUser();
                     break;
                 case 2:
                     calling_user.viewRoute();
                     pressAnyKeyToContinue();
-                    printOptions();
+                    printOptionsUser();
                     break;
                 case 3:
                     calling_user.viewStops();// To be decided..
                     pressAnyKeyToContinue();
-                    printOptions();
+                    printOptionsUser();
                     break;
                 case 4:
                     break;
@@ -90,7 +89,12 @@ public class UserFactory {
                 case 6:
                     break;
                 case 7:
+                    break;
+                case 8:
                     c = false;
+                    break;
+                case 9:
+                    System.exit(0);
                     break;
 
                 default:
