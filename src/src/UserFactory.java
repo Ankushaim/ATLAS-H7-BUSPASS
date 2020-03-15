@@ -49,9 +49,10 @@ public class UserFactory {
                     calling_user.updateUserDetails();
                     break;
                 case 2:
-
+                    calling_user.viewRoute();
                     break;
                 case 3:
+                    calling_user.viewStops();// To be decided..
                     break;
                 case 4:
                     break;

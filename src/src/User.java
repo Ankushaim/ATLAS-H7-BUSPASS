@@ -1,14 +1,24 @@
 import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class User {
     private String userId;
     public User(String userId) {
         this.userId = userId;
     }
+
+    RouteMaster calling_route = new RouteMaster();
     public void viewRoute() {
-        RouteMaster calling_route = new RouteMaster();
         calling_route.viewAllRoutes();
+    }
+
+    //To be decided..
+    public void viewStops() {
+        calling_route.viewAllStops();
     }
 
     void updateUserDetails() {
@@ -71,7 +81,7 @@ public class User {
         }
 
         for(Map.Entry m:userDetails.entrySet()) {
-            String sql = "UPDATE user_info SET "+ m.getKey()+" = '"+m.getValue()+"' where login = '"+ userName+"'";
+            String sql = "UPDATE user_info SET "+ m.getKey()+" = '"+m.getValue()+"' where login = '"+ userId+"'";
             JdbcConnect jbc = new JdbcConnect();
             if(jbc.connect() != null) // check
             {

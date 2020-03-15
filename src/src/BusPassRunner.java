@@ -2,11 +2,6 @@ import java.util.Scanner;
 
 public class BusPassRunner {
     public static void main(String[] args) {
-
-        RouteMaster rm = new RouteMaster();
-        rm.viewAllRoutes();
-        rm.viewAllStops();
-
         BusPassRunner runObj = new BusPassRunner();
         System.out.println("Welcome to Amazon Transport Service Portal");
         System.out.println("To continue please select the below:");
