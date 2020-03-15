@@ -80,7 +80,7 @@ public class User {
 
         }
 
-        for(Map.Entry m:userDetails.entrySet()) {
+        for(Map.Entry<String, String> m:userDetails.entrySet()) {
             String sql = "UPDATE user_info SET "+ m.getKey()+" = '"+m.getValue()+"' where login = '"+ userId+"'";
             JdbcConnect jbc = new JdbcConnect();
             if(jbc.connect() != null) // check
