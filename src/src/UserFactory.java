@@ -10,14 +10,12 @@ public class UserFactory {
 
     UserFactory(String userId) {
         JdbcConnect jbc = new JdbcConnect();
-        if(jbc.connect() != null) {
-            String sql = "select user_name from user_info where login = '"+userId+"'" ;
-            try(Statement stmt = jbc.connect().createStatement();
-                ResultSet rs = stmt.executeQuery(sql))
-            {
+        if (jbc.connect() != null) {
+            String sql = "select user_name from user_info where login = '" + userId + "'";
+            try (Statement stmt = jbc.connect().createStatement();
+                 ResultSet rs = stmt.executeQuery(sql)) {
                 Name = rs.getString("user_name");
-            }catch (SQLException e)
-            {
+            } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
         }
@@ -42,7 +40,7 @@ public class UserFactory {
         System.out.println("7. go to previous Menu: ");
         boolean c = true;
 
-        while(c) {
+        while (c) {
             System.out.println("Input: ");
             Scanner input = new Scanner(System.in);
             int choice = input.nextInt();
@@ -79,3 +77,4 @@ public class UserFactory {
 
         }
     }
+}

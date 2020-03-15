@@ -3,12 +3,9 @@ import java.util.Scanner;
 
 public class User {
     private String userId;
-
     public User(String userId) {
         this.userId = userId;
     }
-
-
     public void viewRoute() {
         RouteMaster calling_route = new RouteMaster();
         calling_route.viewAllRoutes();
@@ -87,13 +84,8 @@ public class User {
                 {
                     System.out.println(e.getMessage());
                 }
-
             }
-
         }
-
-
     }
+}
 
-}
-}
