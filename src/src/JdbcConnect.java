@@ -17,6 +17,4 @@ public class JdbcConnect {
         }
         return conn;
     }
-
-
 }

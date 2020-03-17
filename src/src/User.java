@@ -31,9 +31,9 @@ public class User {
         System.out.println("4. Stop: ");
         System.out.println("5. Password: ");
         System.out.println("6. go to previous Menu: ");
-        boolean c = true;
+        boolean flag = true;
 
-        while(c) {
+        while(flag) {
             System.out.println("Input: ");
             Scanner input = new Scanner(System.in);
             int choice = input.nextInt();
@@ -66,7 +66,7 @@ public class User {
                     userDetails.put("password", password.nextLine());
                     break;
                 case 6:
-                    c = false;
+                    flag = false;
                     break;
                 default:
                     System.out.println("Select Details to Update");

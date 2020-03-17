@@ -51,7 +51,7 @@ public class BusPassRunner {
                     }
                     break;
                 case 3:
-                    System.out.println("Welcome Guest");
+                    Guest guestOb = new Guest();
                     break;
                 case 4:
                     System.out.println("Thanks for visiting");
