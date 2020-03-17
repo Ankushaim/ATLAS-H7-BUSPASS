@@ -52,9 +52,9 @@ public class AdminFactory {
 
         Admin calling_admin = new Admin(userId);
         printOptionsAdmin();
-        boolean c = true;
+        boolean flag = true;
 
-        while (c) {
+        while (flag) {
             System.out.print("Input: ");
             Scanner input = new Scanner(System.in);
             int choice = input.nextInt();
