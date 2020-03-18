@@ -1,118 +1,101 @@
-import java.sql.ResultSet;
+import java.util.HashMap;
+import java.util.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.InputMismatchException;
-import java.util.Scanner;
 
 public class UserFactory {
-    String userId;
-    String userName = null;
-
-    UserFactory(String userId) {
-        JdbcConnect jbc = new JdbcConnect();
-        if (jbc.connect() != null) {
-            String sql = "select user_name from user_info where login = '" + userId + "'";
-            try (Statement stmt = jbc.connect().createStatement();
-                 ResultSet rs = stmt.executeQuery(sql)) {
-                this.userName = rs.getString("user_name");
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-        }
+    private String userId;
+    public UserFactory(String userId) {
         this.userId = userId;
-        view_controller_user();
     }
 
-    static void printOptionsUser() {
-        System.out.println();
-        System.out.print("1. Edit or Change details: " + "\t");//done
-        System.out.print("2. View all routes: "+ "\t"); //done
-        System.out.println("3. Show my route : "+ "\t"); //done
-        System.out.print("4. Request to cancel the Bus Pass: " + "\t");
-        System.out.print("5. Request to suspend the pass: " + "\t");
-        System.out.println("6. Request for new route: " + "\t");
-        System.out.print("7. Print your pass: " + "\t");
-        System.out.println("8. go to previous Menu: " + "\t");
+    RouteMaster calling_route = new RouteMaster();
+    public void viewRoute() {
+        calling_route.viewAllRoutes();
     }
 
-    static void pressAnyKeyToContinue()
-    {
-        System.out.println("Press Enter/Return key to continue...");
-        try
-        {
-            System.in.read();
-        }
-        catch(Exception e)
-        {System.out.println("Enter/Return Exception");}
+    //To be decided..
+    public void viewStops() {
+        calling_route.viewAllStops();
     }
 
-    void view_controller_user() {
-        System.out.println("Welcome " + userName);
-        User calling_user = new User(userId);
-        Scanner input;
+    void updateUserDetails() {
+        HashMap<String, String> userDetails = new HashMap<>();
 
-        System.out.println("Select appropriate activity to perform");
-        printOptionsUser();
+        System.out.println("Select Details to Update");
+        System.out.println("1. Phone Number: ");
+        System.out.println("2. Address: ");
+        System.out.println("3. City: ");
+        System.out.println("4. Stop: ");
+        System.out.println("5. Password: ");
+        System.out.println("6. go to previous Menu: ");
         boolean flag = true;
-        boolean error;
-        while (flag) {
 
-            int choice = 0;
-            do {
-                try {
-                    System.out.print("Input: ");
-                    input = new Scanner(System.in);
-                    choice=input.nextInt();
-                    error=false;
-                } catch(InputMismatchException e) {
-                    System.out.println("Invalid Input :-( only Integers allowed");
-                    error=true;
-                }
-            } while(error);
-
+        while(flag) {
+            System.out.println("Input: ");
+            Scanner input = new Scanner(System.in);
+            int choice = input.nextInt();
             switch (choice) {
                 case 1:
-                    calling_user.updateUserDetails();
-                    pressAnyKeyToContinue();
-                    printOptionsUser();
+                    System.out.print("Enter Phone Number: ");
+                    Scanner phone_num = new Scanner(System.in);
+                    userDetails.put("phone_num", Integer.toString(phone_num.nextInt()));
                     break;
                 case 2:
-                    calling_user.viewRoute();
-                    pressAnyKeyToContinue();
-                    printOptionsUser();
+                    System.out.print("Enter Address: ");
+                    Scanner address = new Scanner(System.in);
+                    userDetails.put("address", address.nextLine());
                     break;
                 case 3:
-                    calling_user.viewStops();// To be decided..
-                    pressAnyKeyToContinue();
-                    printOptionsUser();
+                    System.out.print("Enter City: ");
+                    Scanner city = new Scanner(System.in);
+                    userDetails.put("city", city.nextLine());
                     break;
                 case 4:
+                    System.out.print("Enter Bus Stop: ");
+                    Scanner stop = new Scanner(System.in);
+                    userDetails.put("stop", stop.nextLine());
+                    userDetails.put("status", "pending");
+                    System.out.println("As the stop is changed your pass is temprory deactivted for Admin approval.");
                     break;
                 case 5:
+                    System.out.print("Enter Password: ");
+                    Scanner password = new Scanner(System.in);
+                    userDetails.put("password", password.nextLine());
                     break;
                 case 6:
-                    break;
-                case 7:
-                    break;
-                case 8:
                     flag = false;
                     break;
-                case 9:
-                    System.exit(0);
-                    break;
-
                 default:
-                    System.out.println("Select valid activity to perform");
-                    System.out.println("1. Edit or Change details: ");
-                    System.out.println("2. View all routes: ");
-                    System.out.println("3. Show my route : ");
-                    System.out.println("4. Request to cancel the Bus Pass: ");
-                    System.out.println("5. Request to suspend the pass: ");
-                    System.out.println("5. Request for new route: ");
-                    System.out.println("6. Print your pass: ");
-                    System.out.println("7. go to previous Menu: ");
+                    System.out.println("Select Details to Update");
+                    System.out.println("1. Phone Number: ");
+                    System.out.println("2. Address: ");
+                    System.out.println("3. City: ");
+                    System.out.println("4. Stop: ");
+                    System.out.println("5. Password: ");
+                    System.out.println("Input: ");
             }
 
+        }
+
+        for(Map.Entry<String, String> m:userDetails.entrySet()) {
+            String sql = "UPDATE user_info SET "+ m.getKey()+" = '"+m.getValue()+"' where login = '"+ userId+"'";
+            JdbcConnect jbc = new JdbcConnect();
+            if(jbc.connect() != null) // check
+            {
+                try (Connection conn = jbc.connect();
+                     PreparedStatement pstmt = conn.prepareStatement(sql)
+                )
+                {
+                    pstmt.executeUpdate();
+                } catch (SQLException e)
+                {
+                    System.out.println(e.getMessage());
+                }
+            }
         }
     }
 }
+

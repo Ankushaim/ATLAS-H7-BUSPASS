@@ -52,7 +52,7 @@ public class GuestFactory {
             while(login.length() == 0);
             if(userCheck(login, con))  //To check is login already registered..
             {
-                System.out.println("User Already Exists");
+                System.out.println("UserFactory Already Exists");
                 break;
             }
             else
