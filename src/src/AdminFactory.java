@@ -26,8 +26,8 @@ public class AdminFactory {
     void registerBus() {
         Vehicle ob = null;
         System.out.println("\n" + "Please Select a vehicle type");
-        System.out.println("FiveSeater Select 5");
         System.out.println("ThreeSeater Select 3 ");
+        System.out.println("FiveSeater Select 5");
         System.out.println("SevenSeater Select 7");
         int choice = 0;
         boolean error;
