@@ -1,96 +1,104 @@
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class AdminFactory {
-    String userId;
-    String adminName = null;
+    private String userId;
 
     public AdminFactory(String userId) {
-        JdbcConnect jbc = new JdbcConnect();
-        if (jbc.connect() != null) {
-            String sql = "select user_name from user_info where login = '" + userId + "'";
-            try (Statement stmt = jbc.connect().createStatement();
-                 ResultSet rs = stmt.executeQuery(sql)) {
-                this.adminName = rs.getString("user_name");
+        this.userId = userId;
+    }
+
+    Scanner input = new Scanner(System.in);
+    String regNumber;
+
+    String regNumberCheck() {
+        regNumber = input.nextLine();
+        while(regNumber.length() != 4)
+        {
+            System.out.print("Please provide valid 4 digit Reg Number: ");
+            regNumber = input.nextLine();
+        }
+        return regNumber;
+    }
+
+    void registerBus() {
+        Vehicle ob = null;
+        System.out.println("\n" + "Please Select a vehicle type");
+        System.out.println("ThreeSeater Select 3 ");
+        System.out.println("FiveSeater Select 5");
+        System.out.println("SevenSeater Select 7");
+        int choice = 0;
+        boolean error;
+        do {
+            try {
+                System.out.print("Input: ");
+                input = new Scanner(System.in);
+                choice=input.nextInt();
+                if(choice == 3 || choice == 5 || choice == 7)
+                    error = false;
+                else {
+                    System.out.println("Invalid Input :-( Select 3, 5, or 7" + "\n");
+                    error=true;
+                }
+
+            } catch(InputMismatchException e) {
+                System.out.println("Invalid Input :-( Select 3, 5, or 7");
+                error=true;
+            }
+        } while(error);
+        String regNumber;
+        switch (choice) {
+            case 3:
+                regNumber = regNumberCheck();
+                ob = new ThreeSeater(regNumber);
+                break;
+            case 5:
+                regNumber = regNumberCheck();
+                ob = new FiveSeater(regNumber);
+                break;
+            case 7:
+                regNumber = regNumberCheck();
+                ob = new SevenSeater(regNumber);
+                break;
+            default:
+                System.out.println("Invalid Input :-( ");
+                break;
+        }
+
+        JdbcConnect jdbc = new JdbcConnect();
+        Connection con = jdbc.connect();
+        String check = "SELECT DISTINCT number_plate FROM bus_table";
+        String sqlQuery = "INSERT INTO bus_table(number_plate, category_id) values(?,?)";
+        PreparedStatement pstIns;
+        if(con != null)
+        {
+            try {
+                pstIns = con.prepareStatement(check);
+                ResultSet rs = pstIns.executeQuery();
+                ArrayList<String>  vehNum= new ArrayList<String>();
+                while(rs.next()) {
+                    vehNum.add(rs.getString("number_plate"));
+                }
+                if(vehNum.contains(ob.vehicleNumber)) {
+                    System.out.println("Vehicle already Registered with ATS");
+                    con.close();
+                }
+                else{
+                    try {
+                        pstIns = con.prepareStatement(sqlQuery);
+                        pstIns.setString(1, ob.vehicleNumber);
+                        pstIns.setInt(2, ob.capacity);
+                        pstIns.executeUpdate();
+                        System.out.println("Vehicle Successfully Registered");
+                        con.close();
+                    } catch (SQLException e) { System.out.println(e.getMessage());}
+                }
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
         }
-        this.userId = userId;
-        view_controller_admin();
-    }
-
-    static void printOptionsAdmin() {
-        System.out.println();
-        System.out.print("1. View Requests: " + "\t");
-        System.out.print("2. Appoint/Change Bus Driver: "+ "\t"); // ankush
-        System.out.println("3. Generate Report: "+ "\t");
-        System.out.print("4. Add Remove Routes: " + "\t"); // Priyank
-        System.out.print("5. Change Bus type on Routes: " + "\t"); // J needs to be done
-        System.out.println("6. Assign Available Bus on Route: " + "\t"); // almost done J
-        System.out.print("7. View Vehicle List of different Type: " + "\t"); // almost done J
-        System.out.print("8. Register a Bus to Company: " + "\t"); // Done working
-        System.out.println("9. To previous Menu: " + "\t"); // Done
-        System.out.println("10. To Logout: " + "\t"); // Done
-    }
-
-    static void pressAnyKeyToContinue()
-    {
-        System.out.println("Press Enter/Return key to continue...");
-        try
-        {
-            System.in.read();
-        }
-        catch(Exception e)
-        {System.out.println("Enter/Return Exception");}
-    }
-
-    void view_controller_admin() {
-        System.out.println("Welcome " + adminName);
-        Admin calling_admin = new Admin(userId);
-        Scanner input;
-        printOptionsAdmin();
-        boolean flag = true;
-        boolean error;
-        while (flag) {
-            int choice = 0;
-            do {
-                try {
-                    System.out.print("Input: ");
-                    input = new Scanner(System.in);
-                    choice=input.nextInt();
-                    error=false;
-                } catch(InputMismatchException e) {
-                    System.out.println("Invalid Input :-( only Integers allowed");
-                    error=true;
-                }
-            } while(error);
-
-            switch (choice) {
-                case 8:
-                    calling_admin.registerBus();
-                    pressAnyKeyToContinue();
-                    printOptionsAdmin();
-                    break;
-                case 9:
-                    flag = false;
-                    break;
-                case 10:
-                    System.exit(0);
-                default:
-                    System.out.println("Select valid activity to perform");
-                    System.out.println("1. Edit or Change details: ");
-                    System.out.println("2. View all routes: ");
-                    System.out.println("3. Show my route : ");
-                    System.out.println("4. Request to cancel the Bus Pass: ");
-                    System.out.println("5. Request to suspend the pass: ");
-                    System.out.println("5. Request for new route: ");
-                    System.out.println("6. Print your pass: ");
-                    System.out.println("7. go to previous Menu: ");
-            }
-        }
     }
 }
+

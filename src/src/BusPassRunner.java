@@ -56,7 +56,7 @@ public class BusPassRunner {
                     System.out.print("Password: ");
                     password = credential_input.nextLine();
                     if (authCheck.checkCredentials(userId, password, "admin")) {
-                        new AdminFactory(userId);
+                        new Admin(userId);
                     }
                     else{
                         System.out.println("Invalid Credentials");
