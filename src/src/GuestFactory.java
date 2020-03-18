@@ -7,8 +7,6 @@ import java.util.Scanner;
 
 //This class will contain all methods related to Guest feature..
 public class GuestFactory {
-    JdbcConnect jdbc = new JdbcConnect();
-    Connection con = jdbc.connect();
     RouteMaster calling_route = new RouteMaster();
     Scanner input = new Scanner(System.in);
 
@@ -17,7 +15,7 @@ public class GuestFactory {
     }
 
     //This method will check if user already exists in data base also close the DB connection..
-    boolean userCheck(String login) throws SQLException {
+    boolean userCheck(String login, Connection con) throws SQLException {
         PreparedStatement pstSel = con.prepareStatement("select * from user_info where login = ?");
         pstSel.setString(1,login);
         ResultSet r1=pstSel.executeQuery();
@@ -29,6 +27,8 @@ public class GuestFactory {
     }
 
     void register() throws SQLException {
+        JdbcConnect jdbc = new JdbcConnect();
+        Connection con = jdbc.connect();
         String sqlQuery = "INSERT INTO user_info(user_name, login, password, phone_num, address, city, status) values(?,?,?,?,?,?,?)";
         PreparedStatement pstIns = con.prepareStatement(sqlQuery);
 
@@ -50,7 +50,7 @@ public class GuestFactory {
                 login = input.nextLine();
             }
             while(login.length() == 0);
-            if(userCheck(login))  //To check is login already registered..
+            if(userCheck(login, con))  //To check is login already registered..
             {
                 System.out.println("User Already Exists");
                 break;
@@ -103,11 +103,8 @@ public class GuestFactory {
             System.out.println("Registration Successful");
             System.out.println("Please wait for Admin's approval on your ATS pass request :-)");
             con.close();
+            calling_route.selectstop(login);
             flag = false;
         }
     }
-//    public static void main(String[] args) throws SQLException {
-//        GuestFactory ob = new GuestFactory();
-//        ob.register();
-//    }
 }

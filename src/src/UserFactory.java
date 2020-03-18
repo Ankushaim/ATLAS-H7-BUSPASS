@@ -1,6 +1,7 @@
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class UserFactory {
@@ -24,9 +25,9 @@ public class UserFactory {
 
     static void printOptionsUser() {
         System.out.println();
-        System.out.print("1. Edit or Change details: " + "\t");
-        System.out.print("2. View all routes: "+ "\t");
-        System.out.println("3. Show my route : "+ "\t");
+        System.out.print("1. Edit or Change details: " + "\t");//done
+        System.out.print("2. View all routes: "+ "\t"); //done
+        System.out.println("3. Show my route : "+ "\t"); //done
         System.out.print("4. Request to cancel the Bus Pass: " + "\t");
         System.out.print("5. Request to suspend the pass: " + "\t");
         System.out.println("6. Request for new route: " + "\t");
@@ -42,30 +43,33 @@ public class UserFactory {
             System.in.read();
         }
         catch(Exception e)
-        {}
+        {System.out.println("Enter/Return Exception");}
     }
 
     void view_controller_user() {
         System.out.println("Welcome " + userName);
-
         User calling_user = new User(userId);
+        Scanner input;
 
         System.out.println("Select appropriate activity to perform");
-        /*System.out.println("1. Edit or Change details: ");
-        System.out.println("2. View all routes: ");
-        System.out.println("3. Show my route : ");
-        System.out.println("4. Request to cancel the Bus Pass: ");
-        System.out.println("5. Request to suspend the pass: ");
-        System.out.println("5. Request for new route: ");
-        System.out.println("6. Print your pass: ");
-        System.out.println("7. go to previous Menu: ");*/
         printOptionsUser();
-        boolean c = true;
+        boolean flag = true;
+        boolean error;
+        while (flag) {
 
-        while (c) {
-            System.out.print("Input: ");
-            Scanner input = new Scanner(System.in);
-            int choice = input.nextInt();
+            int choice = 0;
+            do {
+                try {
+                    System.out.print("Input: ");
+                    input = new Scanner(System.in);
+                    choice=input.nextInt();
+                    error=false;
+                } catch(InputMismatchException e) {
+                    System.out.println("Invalid Input :-( only Integers allowed");
+                    error=true;
+                }
+            } while(error);
+
             switch (choice) {
                 case 1:
                     calling_user.updateUserDetails();
@@ -91,7 +95,7 @@ public class UserFactory {
                 case 7:
                     break;
                 case 8:
-                    c = false;
+                    flag = false;
                     break;
                 case 9:
                     System.exit(0);

@@ -1,6 +1,7 @@
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class AdminFactory {
@@ -44,27 +45,40 @@ public class AdminFactory {
             System.in.read();
         }
         catch(Exception e)
-        {}
+        {System.out.println("Enter/Return Exception");}
     }
 
     void view_controller_admin() {
         System.out.println("Welcome " + adminName);
-
         Admin calling_admin = new Admin(userId);
+        Scanner input;
         printOptionsAdmin();
         boolean flag = true;
-
+        boolean error;
         while (flag) {
-            System.out.print("Input: ");
-            Scanner input = new Scanner(System.in);
-            int choice = input.nextInt();
+            int choice = 0;
+            do {
+                try {
+                    System.out.print("Input: ");
+                    input = new Scanner(System.in);
+                    choice=input.nextInt();
+                    error=false;
+                } catch(InputMismatchException e) {
+                    System.out.println("Invalid Input :-( only Integers allowed");
+                    error=true;
+                }
+            } while(error);
+
             switch (choice) {
                 case 8:
                     calling_admin.registerBus();
                     pressAnyKeyToContinue();
                     printOptionsAdmin();
                     break;
-                case 2:
+                case 9:
+                    flag = false;
+                    break;
+                case 10:
                     System.exit(0);
                 default:
                     System.out.println("Select valid activity to perform");
@@ -77,9 +91,6 @@ public class AdminFactory {
                     System.out.println("6. Print your pass: ");
                     System.out.println("7. go to previous Menu: ");
             }
-
         }
-
-
     }
 }

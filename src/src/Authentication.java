@@ -36,7 +36,6 @@ public class Authentication {
                             return true;
                         }
                     }
-
                 }
             }catch (SQLException e)
             {

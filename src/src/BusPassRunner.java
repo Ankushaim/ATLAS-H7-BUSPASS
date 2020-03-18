@@ -1,3 +1,4 @@
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class BusPassRunner {
@@ -11,14 +12,14 @@ public class BusPassRunner {
         System.out.println("4. To Logout");
     }
 
-    void pressAnyKeyToContinue() {
+    static void pressAnyKeyToContinue() {
         System.out.println("Press Enter/Return key to continue...");
         try
         {
             System.in.read();
         }
-        catch(Exception ignored)
-        {}
+        catch(Exception e)
+        {System.out.println("Enter/Return Exception");}
     }
 
 
@@ -26,17 +27,28 @@ public class BusPassRunner {
         BusPassRunner runObj = new BusPassRunner();
         Authentication authCheck = new Authentication();
         Scanner credential_input = new Scanner(System.in);
+        Scanner input = null;
         runObj.printOptionsMain();
 
         String userId;
         String password;
         boolean flag = true;
+        boolean error;
         while(flag) {
-            System.out.print("Input: ");
-            Scanner input = new Scanner(System.in);
-            int choice = input.nextInt();
+            int choice = 0;
+            do {
+                try {
+                    System.out.print("Input: ");
+                    input = new Scanner(System.in);
+                    choice=input.nextInt();
+                    error=false;
+                } catch(InputMismatchException e) {
+                    System.out.println("Invalid Input :-( only Integers allowed");
+                    error=true;
+                }
+            } while(error);
 
-            switch (choice) {
+           switch (choice) {
                 case 1:
                     System.out.println("Sign in to continue to ATS Portal");
                     System.out.print("UserId: ");
@@ -45,15 +57,13 @@ public class BusPassRunner {
                     password = credential_input.nextLine();
                     if (authCheck.checkCredentials(userId, password, "admin")) {
                         new AdminFactory(userId);
-                        credential_input.close();
                     }
                     else{
                         System.out.println("Invalid Credentials");
                         System.exit(0);
                     }
-                    input.close();
                     runObj.printOptionsMain();
-                    runObj.pressAnyKeyToContinue();
+                    pressAnyKeyToContinue();
                     break;
                 case 2:
                     System.out.println("Sign in to continue to ATS Portal");
@@ -63,25 +73,23 @@ public class BusPassRunner {
                     password = credential_input.nextLine();
                     if (authCheck.checkCredentials(userId, password, "user")) {
                         new UserFactory(userId);
-                        credential_input.close();
                     }
                     else{
                         System.out.println("Invalid Credentials");
                         System.exit(0);
                     }
-                    input.close();
                     runObj.printOptionsMain();
-                    runObj.pressAnyKeyToContinue();
+                    pressAnyKeyToContinue();
                     break;
                 case 3:
                     new Guest();
-                    input.close();
                     runObj.printOptionsMain();
-                    runObj.pressAnyKeyToContinue();
+                    pressAnyKeyToContinue();
                     break;
                 case 4:
                     System.out.println("Thanks for visiting");
                     input.close();
+                    credential_input.close();
                     flag = false;
                     break;
                 default:
