@@ -32,7 +32,7 @@ public class RouteMaster {
                     System.out.print("  End"+"\n");
                 }catch (SQLException e) {System.out.println(e.getMessage());}
             }
-            JdbcConnect.closeCon(con);
+            //JdbcConnect.closeCon(con);
         }
     }
 
@@ -49,9 +49,9 @@ public class RouteMaster {
                     System.out.print(":: Area -"+rs.getString("area")+"\n");
                 }
             }catch (SQLException e) { System.out.println(e.getMessage());}
-            finally {
-                JdbcConnect.closeCon(con);
-            }
+//            finally {
+//                JdbcConnect.closeCon(con);
+//            }
         }
     }
 

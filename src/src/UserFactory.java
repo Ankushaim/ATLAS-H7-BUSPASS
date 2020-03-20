@@ -7,11 +7,9 @@ import java.util.Scanner;
 
 public class UserFactory {
     private String userId;
-    Connection con = JdbcConnect.connect();
     public UserFactory(String userId) {
         this.userId = userId;
     }
-
     RouteMaster calling_route = new RouteMaster();
 
     public void viewRoute() {
@@ -42,6 +40,7 @@ public class UserFactory {
     }
 
     void updateUserDetails() {
+        Connection con = JdbcConnect.connect();
         HashMap<String, String> userDetails = new HashMap<>();
         printOptionsUserDetailsMethod();
         boolean flag = true;
@@ -76,7 +75,6 @@ public class UserFactory {
                     try {
                         check = new RouteMaster().selectStop(userId);
                     } catch (SQLException e) {
-                        JdbcConnect.closeCon(con);
                         e.printStackTrace();
                     }
                     if (check) {
@@ -112,7 +110,6 @@ public class UserFactory {
                     PreparedStatement pstmt = con.prepareStatement(sql);
                     pstmt.executeUpdate();
                 } catch (SQLException e) {System.out.println(e.getMessage());}
-                finally {JdbcConnect.closeCon(con);}
             }
         }
     }

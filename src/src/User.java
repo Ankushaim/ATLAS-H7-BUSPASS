@@ -17,7 +17,8 @@ public class User {
                 this.userName = rs.getString("user_name");
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
-            }finally {JdbcConnect.closeCon(con);}
+            }
+            finally {JdbcConnect.closeCon(con);}
         }
         this.userId = userId;
         view_controller_user();
