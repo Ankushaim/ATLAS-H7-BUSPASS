@@ -4,15 +4,15 @@ import java.util.Scanner;
 
 public class RouteMaster {
 
-    void viewAllRoutes(Connection con) {
+    void viewAllRoutes() {
+        Connection con = JdbcConnect.connect();
         ArrayList<String> routes = null;
         if(con != null) // check
         {
             String sql = "select distinct route from route_info";
-            try(
-                    PreparedStatement stmt  = con.prepareStatement(sql);
-                    ResultSet rs = stmt.executeQuery();
-            ){
+            try{
+                PreparedStatement stmt  = con.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery();
                 routes = new ArrayList<String>();
                 while(rs.next()) {
                     routes.add(rs.getString("route"));
@@ -22,11 +22,9 @@ public class RouteMaster {
             System.out.print("Active Routes"+"\n");
             for(String obj: routes) {
                 sql = "select distinct stops from route_info where route='"+obj+"' ";
-                try(
-                        PreparedStatement stmt = con.prepareStatement(sql);
-                        ResultSet rs = stmt.executeQuery()
-                )
-                {
+                try {
+                    PreparedStatement stmt = con.prepareStatement(sql);
+                    ResultSet rs = stmt.executeQuery();
                     System.out.print("Route  "+obj+"-Start");
                     while(rs.next()) {
                         System.out.print("--"+rs.getString("stops"));
@@ -34,53 +32,56 @@ public class RouteMaster {
                     System.out.print("  End"+"\n");
                 }catch (SQLException e) {System.out.println(e.getMessage());}
             }
+            JdbcConnect.closeCon(con);
         }
     }
 
     void viewAllStops() {
-        Connection conn = JdbcConnect.connect();
-        if(conn != null) // check
+        Connection con = JdbcConnect.connect();
+        if(con != null)
         {
-            String sql = "select stop_name , area from stop_info order by area"; //
-            try(
-                    PreparedStatement pstSel  = conn.prepareStatement(sql);
-                    ResultSet rs    = pstSel.executeQuery()
-            ){
+            String sql = "select stop_name , area from stop_info order by area";
+            try {
+                PreparedStatement pstSel  = con.prepareStatement(sql);
+                ResultSet rs = pstSel.executeQuery();
                 while(rs.next()) {
                     System.out.print("Stop Name -"+rs.getString("stop_name"));
                     System.out.print(":: Area -"+rs.getString("area")+"\n");
                 }
             }catch (SQLException e) { System.out.println(e.getMessage());}
+            finally {
+                JdbcConnect.closeCon(con);
+            }
         }
     }
 
-    boolean selectStop(String login, Connection conn) throws SQLException {
-        Scanner s = new Scanner(System.in);
+    boolean selectStop(String login) throws SQLException {
+        Connection con = JdbcConnect.connect();
+        Scanner input = new Scanner(System.in);
         ArrayList <String> stops = new ArrayList<String>();
         ArrayList <String> directions = new ArrayList<String>();
         System.out.println("\n"+"Enter the direction where you are looking for stop:  EAST , WEST , NORTH , SOUTH");
         System.out.print("Input: ");
-        if (conn != null) {
+        if (con != null) {
             String sqlQuery = "select distinct direction from stop_info;";
-            PreparedStatement pstSel = conn.prepareStatement(sqlQuery);
+            PreparedStatement pstSel = con.prepareStatement(sqlQuery);
             ResultSet rs1    = pstSel.executeQuery();
             while(rs1.next()) {
                 directions.add(rs1.getString("direction"));
             }
             String direction;
             do {
-                direction = s.next().toUpperCase();
+                direction = input.next().toUpperCase();
                 if (!directions.contains(direction))
                 {
                     System.out.print("Invalid Input. Please select Valid Direction: ");
                 }
             } while (!directions.contains(direction));
 
-            String sqlQuery2 = "select stop, direction from stop_info where direction ='"+direction+"'"; //
-            try(
-                    PreparedStatement pstSel2 = conn.prepareStatement(sqlQuery2);
-                    ResultSet rs2    = pstSel2.executeQuery();
-            ){
+            String sqlQuery2 = "select stop, direction from stop_info where direction ='"+direction+"'";
+            try{
+                PreparedStatement pstSel2 = con.prepareStatement(sqlQuery2);
+                ResultSet rs2    = pstSel2.executeQuery();
                 System.out.println("\n");
                 while(rs2.next()) {
                     stops.add(rs2.getString("stop"));
@@ -92,7 +93,7 @@ public class RouteMaster {
             System.out.print("Enter Stop Name: ");
             String stopname;
             do {
-                stopname = s.next().toUpperCase();
+                stopname = input.next().toUpperCase();
                 if (!stops.contains(stopname))
                 {
                     System.out.print("Invalid Input. Please select Valid stop name: ");
@@ -101,10 +102,12 @@ public class RouteMaster {
 
             String sql = "UPDATE user_info SET stop ='"+stopname+"', status='PENDING' WHERE login ='"+login+"' and '"+stopname+"' in (SELECT stop from stop_info where direction= '"+direction+"')";
             try (
-                    PreparedStatement pstUpdt = conn.prepareStatement(sql)) {
+                    PreparedStatement pstUpdt = con.prepareStatement(sql)) {
                 pstUpdt.executeUpdate();
             } catch (SQLException e) { System.out.println(e.getMessage());}
             System.out.println("Stop Request sent for :"+ login+"\nApproval : PENDING");
+            //input.close();
+            JdbcConnect.closeCon(con);
             return true;
         }
         return false;

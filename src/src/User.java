@@ -17,7 +17,7 @@ public class User {
                 this.userName = rs.getString("user_name");
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
-            }
+            }finally {JdbcConnect.closeCon(con);}
         }
         this.userId = userId;
         view_controller_user();
@@ -33,22 +33,21 @@ public class User {
         System.out.println("6. Request for new route: " + "\t");
         System.out.print("7. Print your pass: " + "\t");
         System.out.println("8. go to previous Menu: " + "\t");
+        System.out.println("9. To logOut: ");
     }
 
-    static void pressAnyKeyToContinue() {
+    static void pressAnyKeyToContinue(){
         System.out.println("Press Enter/Return key to continue...");
         try
         {
             System.in.read();
-        }
-        catch(Exception e)
-        {System.out.println("Enter/Return Exception");}
+        } catch(Exception e) {System.out.println("Enter/Return Exception");}
     }
 
     void view_controller_user() {
         System.out.println("Welcome " + userName);
         UserFactory calling_user = new UserFactory(userId);
-        Scanner input;
+        Scanner input = null;
 
         System.out.println("Select appropriate activity to perform");
         printOptionsUser();
@@ -99,17 +98,9 @@ public class User {
                 case 9:
                     System.exit(0);
                     break;
-
                 default:
-                    System.out.println("Select valid activity to perform");
-                    System.out.println("1. Edit or Change details: ");
-                    System.out.println("2. View all routes: ");
-                    System.out.println("3. Show my route : ");
-                    System.out.println("4. Request to cancel the Bus Pass: ");
-                    System.out.println("5. Request to suspend the pass: ");
-                    System.out.println("5. Request for new route: ");
-                    System.out.println("6. Print your pass: ");
-                    System.out.println("7. go to previous Menu: ");
+                    System.out.print("Select valid activity to perform");
+                    printOptionsUser();
             }
         }
     }

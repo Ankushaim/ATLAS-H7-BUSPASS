@@ -3,8 +3,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class JdbcConnect {
-
-
     public static  Connection connect() {
         // SQLite connection string
         String url = "jdbc:sqlite:BusPass.db"; // hard code DB
@@ -16,5 +14,12 @@ public class JdbcConnect {
             System.out.println(e.getMessage());
         }
         return conn;
+    }
+    public static void  closeCon(Connection con) {
+        try {
+            con.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

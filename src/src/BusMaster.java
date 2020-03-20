@@ -91,9 +91,4 @@ public class BusMaster {
             }
         }
     }
-
-    public static void main(String[] args) throws SQLException {
-        BusMaster bm = new BusMaster();
-        bm.AddBusInRoute("R1");
-    }
 }

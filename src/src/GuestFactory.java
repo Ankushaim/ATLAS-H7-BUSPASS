@@ -5,14 +5,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-//This class will contain all methods related to Guest feature..
 public class GuestFactory {
+
     RouteMaster calling_route = new RouteMaster();
     Scanner input = new Scanner(System.in);
-    Connection con = JdbcConnect.connect();
 
     public void getRouteFromRouteMaster() {
-        calling_route.viewAllRoutes(con);
+        calling_route.viewAllRoutes();
     }
 
     //This method will check if user already exists in data base also close the DB connection..
@@ -20,14 +19,11 @@ public class GuestFactory {
         PreparedStatement pstSel = con.prepareStatement("select * from user_info where login = ?");
         pstSel.setString(1,login);
         ResultSet r1=pstSel.executeQuery();
-        if(r1.next()) {
-            con.close();
-            return true;
-        }
-        return false;
+        return r1.next();
     }
 
     void register() throws SQLException {
+        Connection con = JdbcConnect.connect();
         String sqlQuery = "INSERT INTO user_info(user_name, login, password, phone_num, address, city, status) values(?,?,?,?,?,?,?)";
         PreparedStatement pstIns = con.prepareStatement(sqlQuery);
 
@@ -89,7 +85,6 @@ public class GuestFactory {
             while(city.length() == 0);
             regDetails.add(city);
 
-            //String s = "pending";
             regDetails.add("not applied"); // to set application in pending..
 
             int  i = 1;
@@ -100,7 +95,7 @@ public class GuestFactory {
             }
             pstIns.executeUpdate();
             System.out.println("Registration Successful");
-            if (calling_route.selectStop(login, con)) {
+            if (calling_route.selectStop(login)) {
                 System.out.println("Please wait for Admin's approval on your ATS pass request :-)");
             }
             else{

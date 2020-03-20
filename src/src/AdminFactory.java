@@ -23,7 +23,8 @@ public class AdminFactory {
         return regNumber;
     }
 
-    void registerBus(Connection con) {
+    void registerBus() {
+        Connection con = JdbcConnect.connect();
         Vehicle ob = null;
         System.out.println("\n" + "Please Select a vehicle type");
         System.out.println("ThreeSeater Select 3 ");
@@ -42,12 +43,12 @@ public class AdminFactory {
                     System.out.println("Invalid Input :-( Select 3, 5, or 7" + "\n");
                     error=true;
                 }
-
             } catch(InputMismatchException e) {
                 System.out.println("Invalid Input :-( Select 3, 5, or 7");
                 error=true;
             }
         } while(error);
+
         String regNumber;
         switch (choice) {
             case 3:
@@ -66,8 +67,7 @@ public class AdminFactory {
                 System.out.println("Invalid Input :-( ");
                 break;
         }
-//        JdbcConnect jdbc = new JdbcConnect();
-//        Connection con = jdbc.connect();
+
         String check = "SELECT DISTINCT number_plate FROM bus_table";
         String sqlQuery = "INSERT INTO bus_table(number_plate, category_id) values(?,?)";
         PreparedStatement pstIns;
@@ -82,7 +82,6 @@ public class AdminFactory {
                 }
                 if(vehNum.contains(ob.vehicleNumber)) {
                     System.out.println("Vehicle already Registered with ATS");
-                    con.close();
                 }
                 else{
                     try {
@@ -91,12 +90,10 @@ public class AdminFactory {
                         pstIns.setInt(2, ob.capacity);
                         pstIns.executeUpdate();
                         System.out.println("Vehicle Successfully Registered");
-                        con.close();
                     } catch (SQLException e) { System.out.println(e.getMessage());}
                 }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
+            } catch (SQLException e) {System.out.println(e.getMessage());}
+            finally {JdbcConnect.closeCon(con);}
         }
     }
 }

@@ -10,15 +10,13 @@ public class Admin {
     public Admin(String userId) {
         if (con != null) {
             String sql = "select user_name from user_info where login = ?";
-            //String sql = "select user_name from user_info where login = '" + userId + "'";
             try {
                 PreparedStatement pstSel = con.prepareStatement(sql);
                 pstSel.setString(1, userId);
                 ResultSet rs = pstSel.executeQuery();
                 this.adminName = rs.getString("user_name");
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
+            } catch (SQLException e) {System.out.println(e.getMessage());}
+            finally {JdbcConnect.closeCon(con);}
         }
         this.userId = userId;
         view_controller_admin();
@@ -27,15 +25,15 @@ public class Admin {
     static void printOptionsAdmin() {
         System.out.println();
         System.out.print("1. View Requests: " + "\t");
-        System.out.print("2. Appoint/Change Bus Driver: "+ "\t"); // ankush
+        System.out.print("2. Appoint/Change Bus Driver: "+ "\t");
         System.out.println("3. Generate Report: "+ "\t");
-        System.out.print("4. Add Remove Routes: " + "\t"); // Priyank
-        System.out.print("5. Change Bus type on Routes: " + "\t"); // J needs to be done
-        System.out.println("6. Assign Available Bus on Route: " + "\t"); // almost done J
-        System.out.print("7. View Vehicle List of different Type: " + "\t"); // almost done J
-        System.out.print("8. Register a Bus to Company: " + "\t"); // Done working
-        System.out.println("9. To previous Menu: " + "\t"); // Done
-        System.out.println("10. To Logout: " + "\t"); // Done
+        System.out.print("4. Add Remove Routes: " + "\t");
+        System.out.print("5. Change Bus type on Routes: " + "\t");
+        System.out.println("6. Assign Available Bus on Route: " + "\t");
+        System.out.print("7. View Vehicle List of different Type: " + "\t");
+        System.out.print("8. Register a Bus to Company: " + "\t");
+        System.out.println("9. To previous Menu: " + "\t");
+        System.out.println("10. To Logout: " + "\t");
     }
 
     static void pressAnyKeyToContinue() {
@@ -43,9 +41,7 @@ public class Admin {
         try
         {
             System.in.read();
-        }
-        catch(Exception e)
-        {System.out.println("Enter/Return Exception");}
+        } catch(Exception e) {System.out.println("Enter/Return Exception");}
     }
 
     void view_controller_admin() {
@@ -71,7 +67,7 @@ public class Admin {
 
             switch (choice) {
                 case 8:
-                    calling_admin.registerBus(con);
+                    calling_admin.registerBus();
                     pressAnyKeyToContinue();
                     printOptionsAdmin();
                     break;
@@ -81,15 +77,8 @@ public class Admin {
                 case 10:
                     System.exit(0);
                 default:
-                    System.out.println("Select valid activity to perform");
-                    System.out.println("1. Edit or Change details: ");
-                    System.out.println("2. View all routes: ");
-                    System.out.println("3. Show my route : ");
-                    System.out.println("4. Request to cancel the Bus Pass: ");
-                    System.out.println("5. Request to suspend the pass: ");
-                    System.out.println("5. Request for new route: ");
-                    System.out.println("6. Print your pass: ");
-                    System.out.println("7. go to previous Menu: ");
+                    System.out.print("Select valid activity to perform");
+                    printOptionsAdmin();
             }
         }
     }

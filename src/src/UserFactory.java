@@ -15,28 +15,39 @@ public class UserFactory {
     RouteMaster calling_route = new RouteMaster();
 
     public void viewRoute() {
-        calling_route.viewAllRoutes(con);
+        calling_route.viewAllRoutes();
     }
-
     //To be decided..
     public void viewStops() {
         calling_route.viewAllStops();
     }
 
+    static void printOptionsUserDetailsMethod() {
+        System.out.println();
+        System.out.println("Select Details to Update");
+        System.out.print("1. Phone Number: " + "\t");
+        System.out.print("2. Address: " + "\t");
+        System.out.println("3. City: "+ "\t");
+        System.out.print("4. Stop: " + "\t");
+        System.out.print("5. Password: "+ "\t");
+        System.out.println("6. go to previous Menu: ");
+    }
+
+    static void pressAnyKeyToContinue(){
+        System.out.println("Press Enter/Return key to continue...");
+        try
+        {
+            System.in.read();
+        } catch(Exception e) {System.out.println("Enter/Return Exception");}
+    }
+
     void updateUserDetails() {
         HashMap<String, String> userDetails = new HashMap<>();
-
-        System.out.println("Select Details to Update");
-        System.out.println("1. Phone Number: ");
-        System.out.println("2. Address: ");
-        System.out.println("3. City: ");
-        System.out.println("4. Stop: ");
-        System.out.println("5. Password: ");
-        System.out.println("6. go to previous Menu: ");
+        printOptionsUserDetailsMethod();
         boolean flag = true;
 
         while(flag) {
-            System.out.println("Input: ");
+            System.out.print("Input: ");
             Scanner input = new Scanner(System.in);
             int choice = input.nextInt();
             switch (choice) {
@@ -44,52 +55,64 @@ public class UserFactory {
                     System.out.print("Enter Phone Number: ");
                     Scanner phone_num = new Scanner(System.in);
                     userDetails.put("phone_num", Integer.toString(phone_num.nextInt()));
+                    printOptionsUserDetailsMethod();
                     break;
                 case 2:
                     System.out.print("Enter Address: ");
                     Scanner address = new Scanner(System.in);
                     userDetails.put("address", address.nextLine());
+                    pressAnyKeyToContinue();
+                    printOptionsUserDetailsMethod();
                     break;
                 case 3:
                     System.out.print("Enter City: ");
                     Scanner city = new Scanner(System.in);
                     userDetails.put("city", city.nextLine());
+                    pressAnyKeyToContinue();
+                    printOptionsUserDetailsMethod();
                     break;
                 case 4:
-                    System.out.print("Enter Bus Stop: ");
-                    Scanner stop = new Scanner(System.in);
-                    userDetails.put("stop", stop.nextLine());
-                    userDetails.put("status", "pending");
-                    System.out.println("As the stop is changed your pass is temprory deactivted for Admin approval.");
+                    boolean check = false;
+                    try {
+                        check = new RouteMaster().selectStop(userId);
+                    } catch (SQLException e) {
+                        JdbcConnect.closeCon(con);
+                        e.printStackTrace();
+                    }
+                    if (check) {
+                        System.out.println("Please wait for Admin's approval");
+                        System.out.println("As the stop is changed your pass is temprory deactivted for Admin approval.");
+                    }
+                    else {
+                        System.out.println("Please try again :-(");
+                    }
+                    pressAnyKeyToContinue();
+                    printOptionsUserDetailsMethod();
                     break;
                 case 5:
                     System.out.print("Enter Password: ");
                     Scanner password = new Scanner(System.in);
                     userDetails.put("password", password.nextLine());
+                    pressAnyKeyToContinue();
+                    printOptionsUserDetailsMethod();
                     break;
                 case 6:
                     flag = false;
                     break;
                 default:
-                    System.out.println("Select Details to Update");
-                    System.out.println("1. Phone Number: ");
-                    System.out.println("2. Address: ");
-                    System.out.println("3. City: ");
-                    System.out.println("4. Stop: ");
-                    System.out.println("5. Password: ");
-                    System.out.println("Input: ");
+                    printOptionsUserDetailsMethod();
             }
-
         }
 
         for(Map.Entry<String, String> m:userDetails.entrySet()) {
             String sql = "UPDATE user_info SET "+ m.getKey()+" = '"+m.getValue()+"' where login = '"+ userId+"'";
-            if(con != null) // check
+            if(con != null)
             {
                 try {
                     PreparedStatement pstmt = con.prepareStatement(sql);
                     pstmt.executeUpdate();
                 } catch (SQLException e) {System.out.println(e.getMessage());}
+                finally {JdbcConnect.closeCon(con);}
             }
         }
     }
