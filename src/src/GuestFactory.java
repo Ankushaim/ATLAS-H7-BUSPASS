@@ -9,9 +9,10 @@ import java.util.Scanner;
 public class GuestFactory {
     RouteMaster calling_route = new RouteMaster();
     Scanner input = new Scanner(System.in);
+    Connection con = JdbcConnect.connect();
 
     public void getRouteFromRouteMaster() {
-        calling_route.viewAllRoutes();
+        calling_route.viewAllRoutes(con);
     }
 
     //This method will check if user already exists in data base also close the DB connection..
@@ -27,13 +28,11 @@ public class GuestFactory {
     }
 
     void register() throws SQLException {
-        JdbcConnect jdbc = new JdbcConnect();
-        Connection con = jdbc.connect();
         String sqlQuery = "INSERT INTO user_info(user_name, login, password, phone_num, address, city, status) values(?,?,?,?,?,?,?)";
         PreparedStatement pstIns = con.prepareStatement(sqlQuery);
 
         ArrayList<String> regDetails = new ArrayList<>();
-        System.out.println("Create your ATS Account to continue to ATS"+ "\n");
+        System.out.println("Create your ATS Account to continue to ATS");
         boolean flag = true;
         while(flag) {
             String name;
@@ -91,7 +90,7 @@ public class GuestFactory {
             regDetails.add(city);
 
             //String s = "pending";
-            regDetails.add("PENDING"); // to set application in pending..
+            regDetails.add("not applied"); // to set application in pending..
 
             int  i = 1;
             for (String c: regDetails
@@ -101,9 +100,14 @@ public class GuestFactory {
             }
             pstIns.executeUpdate();
             System.out.println("Registration Successful");
-            System.out.println("Please wait for Admin's approval on your ATS pass request :-)");
+            if (calling_route.selectStop(login, con)) {
+                System.out.println("Please wait for Admin's approval on your ATS pass request :-)");
+            }
+            else{
+                System.out.println("Registration Successful. However bus pass application failed");
+                System.out.println("To continue application go to login-> Edit or Change Details-> Change Stop");
+            }
             con.close();
-            calling_route.selectstop(login);
             flag = false;
         }
     }

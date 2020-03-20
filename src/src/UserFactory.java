@@ -1,19 +1,21 @@
-import java.util.HashMap;
-import java.util.*;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 public class UserFactory {
     private String userId;
+    Connection con = JdbcConnect.connect();
     public UserFactory(String userId) {
         this.userId = userId;
     }
 
     RouteMaster calling_route = new RouteMaster();
+
     public void viewRoute() {
-        calling_route.viewAllRoutes();
+        calling_route.viewAllRoutes(con);
     }
 
     //To be decided..
@@ -82,18 +84,12 @@ public class UserFactory {
 
         for(Map.Entry<String, String> m:userDetails.entrySet()) {
             String sql = "UPDATE user_info SET "+ m.getKey()+" = '"+m.getValue()+"' where login = '"+ userId+"'";
-            JdbcConnect jbc = new JdbcConnect();
-            if(jbc.connect() != null) // check
+            if(con != null) // check
             {
-                try (Connection conn = jbc.connect();
-                     PreparedStatement pstmt = conn.prepareStatement(sql)
-                )
-                {
+                try {
+                    PreparedStatement pstmt = con.prepareStatement(sql);
                     pstmt.executeUpdate();
-                } catch (SQLException e)
-                {
-                    System.out.println(e.getMessage());
-                }
+                } catch (SQLException e) {System.out.println(e.getMessage());}
             }
         }
     }

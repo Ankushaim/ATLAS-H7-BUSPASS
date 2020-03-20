@@ -1,19 +1,19 @@
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class User {
     String userId;
     String userName = null;
-
+    Connection con = JdbcConnect.connect();
     User(String userId) {
-        JdbcConnect jbc = new JdbcConnect();
-        if (jbc.connect() != null) {
-            String sql = "select user_name from user_info where login = '" + userId + "'";
-            try (Statement stmt = jbc.connect().createStatement();
-                 ResultSet rs = stmt.executeQuery(sql)) {
+
+        if (con != null) {
+            String sql = "select user_name from user_info where login = ?";
+            try {
+                PreparedStatement pstSel = con.prepareStatement(sql);
+                pstSel.setString(1,userId);
+                ResultSet rs = pstSel.executeQuery();
                 this.userName = rs.getString("user_name");
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
@@ -35,8 +35,7 @@ public class User {
         System.out.println("8. go to previous Menu: " + "\t");
     }
 
-    static void pressAnyKeyToContinue()
-    {
+    static void pressAnyKeyToContinue() {
         System.out.println("Press Enter/Return key to continue...");
         try
         {
@@ -112,7 +111,6 @@ public class User {
                     System.out.println("6. Print your pass: ");
                     System.out.println("7. go to previous Menu: ");
             }
-
         }
     }
 }

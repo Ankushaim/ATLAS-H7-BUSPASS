@@ -1,19 +1,20 @@
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Admin {
     String userId;
     String adminName = null;
+    Connection con = JdbcConnect.connect();
 
     public Admin(String userId) {
-        JdbcConnect jbc = new JdbcConnect();
-        if (jbc.connect() != null) {
-            String sql = "select user_name from user_info where login = '" + userId + "'";
-            try (Statement stmt = jbc.connect().createStatement();
-                 ResultSet rs = stmt.executeQuery(sql)) {
+        if (con != null) {
+            String sql = "select user_name from user_info where login = ?";
+            //String sql = "select user_name from user_info where login = '" + userId + "'";
+            try {
+                PreparedStatement pstSel = con.prepareStatement(sql);
+                pstSel.setString(1, userId);
+                ResultSet rs = pstSel.executeQuery();
                 this.adminName = rs.getString("user_name");
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
@@ -37,8 +38,7 @@ public class Admin {
         System.out.println("10. To Logout: " + "\t"); // Done
     }
 
-    static void pressAnyKeyToContinue()
-    {
+    static void pressAnyKeyToContinue() {
         System.out.println("Press Enter/Return key to continue...");
         try
         {
@@ -71,7 +71,7 @@ public class Admin {
 
             switch (choice) {
                 case 8:
-                    calling_admin.registerBus();
+                    calling_admin.registerBus(con);
                     pressAnyKeyToContinue();
                     printOptionsAdmin();
                     break;

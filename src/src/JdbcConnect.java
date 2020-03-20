@@ -5,7 +5,7 @@ import java.sql.SQLException;
 public class JdbcConnect {
 
 
-    public  Connection connect() {
+    public static  Connection connect() {
         // SQLite connection string
         String url = "jdbc:sqlite:BusPass.db"; // hard code DB
         Connection conn = null;

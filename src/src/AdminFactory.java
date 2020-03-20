@@ -23,7 +23,7 @@ public class AdminFactory {
         return regNumber;
     }
 
-    void registerBus() {
+    void registerBus(Connection con) {
         Vehicle ob = null;
         System.out.println("\n" + "Please Select a vehicle type");
         System.out.println("ThreeSeater Select 3 ");
@@ -66,9 +66,8 @@ public class AdminFactory {
                 System.out.println("Invalid Input :-( ");
                 break;
         }
-
-        JdbcConnect jdbc = new JdbcConnect();
-        Connection con = jdbc.connect();
+//        JdbcConnect jdbc = new JdbcConnect();
+//        Connection con = jdbc.connect();
         String check = "SELECT DISTINCT number_plate FROM bus_table";
         String sqlQuery = "INSERT INTO bus_table(number_plate, category_id) values(?,?)";
         PreparedStatement pstIns;
@@ -77,7 +76,7 @@ public class AdminFactory {
             try {
                 pstIns = con.prepareStatement(check);
                 ResultSet rs = pstIns.executeQuery();
-                ArrayList<String>  vehNum= new ArrayList<String>();
+                ArrayList<String>  vehNum= new ArrayList<>();
                 while(rs.next()) {
                     vehNum.add(rs.getString("number_plate"));
                 }
