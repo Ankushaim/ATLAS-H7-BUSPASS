@@ -1,4 +1,7 @@
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -15,17 +18,25 @@ public class AdminFactory {
     Scanner input = new Scanner(System.in);
     String regNumber;
 
+    void viewRequests() {
+        ViewRequests ob = new ViewRequests();
+        try {
+            ob.PendingBusPassRequests();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     String regNumberCheck() {
         regNumber = input.nextLine();
-        while(regNumber.length() != 4)
-        {
+        while (regNumber.length() != 4) {
             System.out.print("Please provide valid 4 digit Reg Number: ");
             regNumber = input.nextLine();
         }
         return regNumber;
     }
 
-void registerBus() {
+    void registerBus() {
         Connection con = JdbcConnect.connect();
         Vehicle ob = null;
         System.out.println("\n" + "Please Select a vehicle type");
@@ -123,8 +134,7 @@ void registerBus() {
         return route;
     }
 
-    void assignBusToRoute()
-    {
+    void assignBusToRoute() {
         String route = UserRouteValue();
         try {
             calling_busMaster.AddBusInRoute(route);

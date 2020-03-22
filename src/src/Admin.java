@@ -1,4 +1,7 @@
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -66,6 +69,11 @@ public class Admin {
             } while(error);
 
             switch (choice) {
+                case 1:
+                    calling_admin.viewRequests();
+                    pressAnyKeyToContinue();
+                    printOptionsAdmin();
+                    break;
                 case 5:
                     calling_admin.ChangeVehicleTypeofRoute();
                     pressAnyKeyToContinue();
