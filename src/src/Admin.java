@@ -66,6 +66,16 @@ public class Admin {
             } while(error);
 
             switch (choice) {
+                case 5:
+                    calling_admin.ChangeVehicleTypeofRoute();
+                    pressAnyKeyToContinue();
+                    printOptionsAdmin();
+                    break;
+                case 6:
+                    calling_admin.assignBusToRoute();
+                    pressAnyKeyToContinue();
+                    printOptionsAdmin();
+                    break;
                 case 8:
                     calling_admin.registerBus();
                     pressAnyKeyToContinue();

@@ -1,6 +1,8 @@
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -96,6 +98,9 @@ public class UserFactory {
                     break;
                 case 6:
                     flag = false;
+                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    LocalDate localDate = LocalDate.now();
+                    userDetails.put("change_date", dtf.format(localDate));
                     break;
                 default:
                     printOptionsUserDetailsMethod();

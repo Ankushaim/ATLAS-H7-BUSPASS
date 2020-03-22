@@ -1,3 +1,4 @@
+import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -19,7 +20,7 @@ public class BusPassRunner {
         } catch(Exception e) {System.out.println("Enter/Return Exception");}
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         BusPassRunner runObj = new BusPassRunner();
         Authentication authCheck = new Authentication();
         Scanner credential_input = new Scanner(System.in);

@@ -2,6 +2,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -24,7 +26,7 @@ public class GuestFactory {
 
     void register() throws SQLException {
         Connection con = JdbcConnect.connect();
-        String sqlQuery = "INSERT INTO user_info(user_name, login, password, phone_num, address, city, status) values(?,?,?,?,?,?,?)";
+        String sqlQuery = "INSERT INTO user_info(user_name, login, password, phone_num, address, city, status, type, create_date, change_date) values(?,?,?,?,?,?,?,?,?,?)";
         PreparedStatement pstIns = con.prepareStatement(sqlQuery);
 
         ArrayList<String> regDetails = new ArrayList<>();
@@ -85,8 +87,14 @@ public class GuestFactory {
             while(city.length() == 0);
             regDetails.add(city);
 
-            regDetails.add("not applied"); // to set application in pending..
+            regDetails.add("PENDING"); // to set application in pending..
+            regDetails.add("user");
 
+
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate localDate = LocalDate.now();
+            regDetails.add(dtf.format(localDate));
+            regDetails.add(dtf.format(localDate));
             int  i = 1;
             for (String c: regDetails
                  ) {

@@ -10,6 +10,8 @@ public class AdminFactory {
         this.userId = userId;
     }
 
+    BusMaster calling_busMaster = new BusMaster();
+    SQLSelect sel = new SQLSelect();
     Scanner input = new Scanner(System.in);
     String regNumber;
 
@@ -23,7 +25,7 @@ public class AdminFactory {
         return regNumber;
     }
 
-    void registerBus() {
+void registerBus() {
         Connection con = JdbcConnect.connect();
         Vehicle ob = null;
         System.out.println("\n" + "Please Select a vehicle type");
@@ -94,6 +96,50 @@ public class AdminFactory {
                 }
             } catch (SQLException e) {System.out.println(e.getMessage());}
             finally {JdbcConnect.closeCon(con);}
+        }
+    }
+
+    String UserRouteValue() {
+        ArrayList<String> routes = new ArrayList<>();
+        String sql = "select distinct route from route_info";
+        ResultSet rs;
+        try {
+            rs = sel.SqlSelectStatement(sql);
+            while(rs.next()) {
+                routes.add(rs.getString("route"));
+            }
+        } catch (SQLException e) {e.printStackTrace();}
+
+        System.out.println("Available routes are:");
+        for (String s: routes) {
+            System.out.print(s + "\t");
+        }
+
+        String route;
+        do{
+            System.out.print("\n" + "Input: ");
+            route = input.nextLine().toUpperCase();
+        }while(!routes.contains(route));
+        return route;
+    }
+
+    void assignBusToRoute()
+    {
+        String route = UserRouteValue();
+        try {
+            calling_busMaster.AddBusInRoute(route);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void ChangeVehicleTypeofRoute()
+    {
+        String route = UserRouteValue();
+        try {
+            calling_busMaster.ChangeBusTypeOfRoute(route);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }
