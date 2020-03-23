@@ -25,7 +25,6 @@ public class Guest {
     void view_controller_guest() {
         System.out.println("Welcome");
         GuestFactory calling_route = new GuestFactory();
-        Scanner input = null;
         printOptionsGuest();
         boolean flag = true;
         boolean error;
@@ -34,7 +33,7 @@ public class Guest {
             do {
                 try {
                     System.out.print("Input: ");
-                    input = new Scanner(System.in);
+                    Scanner input = new Scanner(System.in);
                     choice = input.nextInt();
                     error = false;
                 }catch (InputMismatchException e)  {
@@ -48,10 +47,6 @@ public class Guest {
                     calling_route.getRouteFromRouteMaster();
                     pressAnyKeyToContinue();
                     printOptionsGuest();
-                    break;
-                case 2:
-                    break;
-                case 3:
                     break;
                 case 4:
                     try {

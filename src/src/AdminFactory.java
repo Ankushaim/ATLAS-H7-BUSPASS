@@ -7,11 +7,6 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class AdminFactory {
-    private String userId;
-
-    public AdminFactory(String userId) {
-        this.userId = userId;
-    }
 
     BusMaster calling_busMaster = new BusMaster();
     SQLSelect sel = new SQLSelect();

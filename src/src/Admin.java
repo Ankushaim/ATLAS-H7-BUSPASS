@@ -47,7 +47,7 @@ public class Admin {
 
     void view_controller_admin() {
         System.out.println("Welcome " + adminName);
-        AdminFactory calling_admin = new AdminFactory(userId);
+        AdminFactory calling_admin = new AdminFactory();
         Scanner input;
         printOptionsAdmin();
         boolean flag = true;

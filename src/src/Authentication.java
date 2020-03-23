@@ -1,39 +1,30 @@
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class Authentication {
-    private String inputName;
-    private String inputPassword;
-    private String	userType;
 
     boolean checkCredentials(String log, String pass, String type) throws SQLException {
 
-        String sql = "select login, password, type from user_info where login = '"+log+"' ";
+        String sql = "select login, password, type from user_info where login = '" + log + "' ";
         SQLSelect sqlRun = new SQLSelect();
         ResultSet rs = sqlRun.SqlSelectStatement(sql);
-        if(!rs.isBeforeFirst())
-        {
+        if (!rs.isBeforeFirst()) {
             return false;
         }
-        inputName = rs.getString("login");
-        inputPassword = rs.getString("password");
-        userType = rs.getString("type");
+        String inputName = rs.getString("login");
+        String inputPassword = rs.getString("password");
+        String userType = rs.getString("type");
         rs.close();
 
-        if(userType.equals("admin"))
-        {
-            if (inputName.equals(log) && inputPassword.equals(pass) && userType.equals(type))
-            {
+        final boolean b = inputName.equals(log) && inputPassword.equals(pass) && userType.equals(type);
+        if (userType.equals("admin")) {
+            if (b) {
                 return true;
             }
         }
         if(userType.equals("user"))
         {
-            if (inputName.equals(log) && inputPassword.equals(pass) && userType.equals(type))
-            {
-                return true;
-            }
+            return b;
         }
 
         return false;

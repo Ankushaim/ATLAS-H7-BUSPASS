@@ -1,4 +1,7 @@
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -13,13 +16,14 @@ public class RouteMaster {
             try{
                 PreparedStatement stmt  = con.prepareStatement(sql);
                 ResultSet rs = stmt.executeQuery();
-                routes = new ArrayList<String>();
+                routes = new ArrayList<>();
                 while(rs.next()) {
                     routes.add(rs.getString("route"));
                 }
             }catch (SQLException e){System.out.println(e.getMessage());}
 
             System.out.print("Active Routes"+"\n");
+            assert routes != null; // This is compiler suggestion need to check working
             for(String obj: routes) {
                 sql = "select distinct stops from route_info where route='"+obj+"' ";
                 try {
@@ -58,15 +62,15 @@ public class RouteMaster {
     boolean selectStop(String login) throws SQLException {
         Connection con = JdbcConnect.connect();
         Scanner input = new Scanner(System.in);
-        ArrayList <String> stops = new ArrayList<String>();
-        ArrayList <String> directions = new ArrayList<String>();
-        System.out.println("\n"+"Enter the direction where you are looking for stop:  EAST , WEST , NORTH , SOUTH");
+        ArrayList<String> stops = new ArrayList<>();
+        ArrayList<String> directions = new ArrayList<>();
+        System.out.println("\n" + "Enter the direction where you are looking for stop:  EAST , WEST , NORTH , SOUTH");
         System.out.print("Input: ");
         if (con != null) {
             String sqlQuery = "select distinct direction from stop_info;";
             PreparedStatement pstSel = con.prepareStatement(sqlQuery);
-            ResultSet rs1    = pstSel.executeQuery();
-            while(rs1.next()) {
+            ResultSet rs1 = pstSel.executeQuery();
+            while (rs1.next()) {
                 directions.add(rs1.getString("direction"));
             }
             String direction;

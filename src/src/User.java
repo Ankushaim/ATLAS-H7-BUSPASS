@@ -49,7 +49,6 @@ public class User {
     void view_controller_user() {
         System.out.println("Welcome " + userName);
         UserFactory calling_user = new UserFactory(userId, userName);
-        Scanner input = null;
 
         System.out.println("Select appropriate activity to perform");
         printOptionsUser();
@@ -61,7 +60,7 @@ public class User {
             do {
                 try {
                     System.out.print("Input: ");
-                    input = new Scanner(System.in);
+                    Scanner input = new Scanner(System.in);
                     choice=input.nextInt();
                     error=false;
                 } catch(InputMismatchException e) {
@@ -85,12 +84,6 @@ public class User {
                     calling_user.viewStops();// To be decided..
                     pressAnyKeyToContinue();
                     printOptionsUser();
-                    break;
-                case 4:
-                    break;
-                case 5:
-                    break;
-                case 6:
                     break;
                 case 7:
                     calling_user.printMyPass();
