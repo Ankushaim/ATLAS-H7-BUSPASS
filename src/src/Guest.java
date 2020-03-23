@@ -9,19 +9,17 @@ public class Guest {
 
     static void printOptionsGuest() {
         System.out.print("1. View All Routes: " + "\t");
-        System.out.println("2. Percentage of seats occupied in each route: "+ "\t");
-        System.out.print("3. Raise a Request to add new Stop: "+ "\t");
+        System.out.println("2. Percentage of seats occupied in each route: " + "\t");
+        System.out.print("3. Raise a Request to add new Stop: " + "\t");
         System.out.println("4. SignUp Apply for Bus Pass: " + "\t");
         System.out.println("5. To previous Menu: " + "\t");
         System.out.println("6. To Logout: " + "\t");
     }
 
     static void pressAnyKeyToContinue() {
-        System.out.println("Press Enter/Return key to continue...");
-        try
-        {
-            System.in.read();
-        } catch(Exception e) {System.out.println("Enter/Return Exception");}
+        System.out.print("Press Enter/Return key to continue...");
+        Scanner scanner = new Scanner(System.in);
+        scanner.nextLine();
     }
 
     void view_controller_guest() {

@@ -13,11 +13,9 @@ public class BusPassRunner {
     }
 
     static void pressAnyKeyToContinue() {
-        System.out.println("Press Enter/Return key to continue...");
-        try
-        {
-            System.in.read();
-        } catch(Exception e) {System.out.println("Enter/Return Exception");}
+        System.out.print("Press Enter/Return key to continue...");
+        Scanner scanner = new Scanner(System.in);
+        scanner.nextLine();
     }
 
     public static void main(String[] args) throws SQLException {

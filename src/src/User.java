@@ -1,4 +1,7 @@
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -37,17 +40,15 @@ public class User {
         System.out.println("9. To logOut: ");
     }
 
-    static void pressAnyKeyToContinue(){
-        System.out.println("Press Enter/Return key to continue...");
-        try
-        {
-            System.in.read();
-        } catch(Exception e) {System.out.println("Enter/Return Exception");}
+    static void pressAnyKeyToContinue() {
+        System.out.print("Press Enter/Return key to continue...");
+        Scanner scanner = new Scanner(System.in);
+        scanner.nextLine();
     }
 
     void view_controller_user() {
         System.out.println("Welcome " + userName);
-        UserFactory calling_user = new UserFactory(userId);
+        UserFactory calling_user = new UserFactory(userId, userName);
         Scanner input = null;
 
         System.out.println("Select appropriate activity to perform");
@@ -92,6 +93,9 @@ public class User {
                 case 6:
                     break;
                 case 7:
+                    calling_user.printMyPass();
+                    pressAnyKeyToContinue();
+                    printOptionsUser();
                     break;
                 case 8:
                     flag = false;

@@ -29,7 +29,7 @@ public class Admin {
         System.out.println();
         System.out.print("1. View Requests: " + "\t");
         System.out.print("2. Appoint/Change Bus Driver: "+ "\t");
-        System.out.println("3. Generate Report: "+ "\t");
+        System.out.println("3. Generate Report: " + "\t");
         System.out.print("4. Add Remove Routes: " + "\t");
         System.out.print("5. Change Bus type on Routes: " + "\t");
         System.out.println("6. Assign Available Bus on Route: " + "\t");
@@ -40,11 +40,9 @@ public class Admin {
     }
 
     static void pressAnyKeyToContinue() {
-        System.out.println("Press Enter/Return key to continue...");
-        try
-        {
-            System.in.read();
-        } catch(Exception e) {System.out.println("Enter/Return Exception");}
+        System.out.print("Press Enter/Return key to continue...");
+        Scanner scanner = new Scanner(System.in);
+        scanner.nextLine();
     }
 
     void view_controller_admin() {
@@ -60,13 +58,13 @@ public class Admin {
                 try {
                     System.out.print("Input: ");
                     input = new Scanner(System.in);
-                    choice=input.nextInt();
-                    error=false;
-                } catch(InputMismatchException e) {
+                    choice = input.nextInt();
+                    error = false;
+                } catch (InputMismatchException e) {
                     System.out.println("Invalid Input :-( only Integers allowed");
-                    error=true;
+                    error = true;
                 }
-            } while(error);
+            } while (error);
 
             switch (choice) {
                 case 1:
