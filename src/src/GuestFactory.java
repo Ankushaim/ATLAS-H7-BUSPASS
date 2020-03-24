@@ -16,14 +16,6 @@ public class GuestFactory {
         calling_route.viewAllRoutes();
     }
 
-    //This method will check if user already exists in data base also close the DB connection..
-    boolean userCheck(String login, Connection con) throws SQLException {
-        PreparedStatement pstSel = con.prepareStatement("select * from user_info where login = ?");
-        pstSel.setString(1,login);
-        ResultSet r1=pstSel.executeQuery();
-        return r1.next();
-    }
-
     void register() throws SQLException {
         Connection con = JdbcConnect.connect();
         String sqlQuery = "INSERT INTO user_info(user_name, login, password, phone_num, address, city, status, type, create_date, change_date) values(?,?,?,?,?,?,?,?,?,?)";
@@ -96,8 +88,8 @@ public class GuestFactory {
             regDetails.add(dtf.format(localDate));
             regDetails.add(dtf.format(localDate));
             int  i = 1;
-            for (String c: regDetails
-                 ) {
+            for (String c : regDetails
+            ) {
                 pstIns.setString(i, c);
                 i++;
             }
@@ -105,13 +97,29 @@ public class GuestFactory {
             System.out.println("Registration Successful");
             if (calling_route.selectStop(login)) {
                 System.out.println("Please wait for Admin's approval on your ATS pass request :-)");
-            }
-            else{
+            } else {
                 System.out.println("Registration Successful. However bus pass application failed");
                 System.out.println("To continue application go to login-> Edit or Change Details-> Change Stop");
             }
             con.close();
             flag = false;
         }
+    }
+
+    void seatOccupancyCheck() {
+        try {
+            System.out.println("\n" + "** Percentage of seats occupied in each Route **");
+            calling_route.seatsOccupiedInRoute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //This method will check if user already exists in data base also close the DB connection..
+    boolean userCheck(String login, Connection con) throws SQLException {
+        PreparedStatement pstSel = con.prepareStatement("select * from user_info where login = ?");
+        pstSel.setString(1, login);
+        ResultSet r1 = pstSel.executeQuery();
+        return r1.next();
     }
 }

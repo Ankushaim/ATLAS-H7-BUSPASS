@@ -19,13 +19,10 @@ public class UserFactory {
 
     RouteMaster calling_route = new RouteMaster();
 
-    public void viewRoute() {
-        calling_route.viewAllRoutes();
-    }
-
-    //To be decided..
-    public void viewStops() {
-        calling_route.viewAllStops();
+    static void pressAnyKeyToContinue() {
+        System.out.print("Press Enter/Return key to continue...");
+        Scanner scanner = new Scanner(System.in);
+        scanner.nextLine();
     }
 
     static void printOptionsUserDetailsMethod() {
@@ -33,16 +30,14 @@ public class UserFactory {
         System.out.println("Select Details to Update");
         System.out.print("1. Phone Number: " + "\t");
         System.out.print("2. Address: " + "\t");
-        System.out.println("3. City: "+ "\t");
+        System.out.println("3. City: " + "\t");
         System.out.print("4. Stop: " + "\t");
-        System.out.print("5. Password: "+ "\t");
+        System.out.print("5. Password: " + "\t");
         System.out.println("6. go to previous Menu: ");
     }
 
-    static void pressAnyKeyToContinue() {
-        System.out.print("Press Enter/Return key to continue...");
-        Scanner scanner = new Scanner(System.in);
-        scanner.nextLine();
+    public void viewRoute() {
+        calling_route.viewAllRoutes();
     }
 
     void updateUserDetails() {
@@ -51,7 +46,7 @@ public class UserFactory {
         printOptionsUserDetailsMethod();
         boolean flag = true;
 
-        while(flag) {
+        while (flag) {
             System.out.print("Input: ");
             Scanner input = new Scanner(System.in);
             int choice = input.nextInt();
@@ -127,22 +122,26 @@ public class UserFactory {
     void printMyPass() {
         Connection con = JdbcConnect.connect();
         String sqlQuery1 = "SELECT pass_id, bus_id, route from pass_details WHERE user_id = ?";
-        String sqlQuery2 = "SELECT stop from user_info WHERE login = ?";
+        String sqlQuery2 = "SELECT stop, date(change_date) as change_date from user_info WHERE login = ? AND status = ?";
         try {
             PreparedStatement ps1 = con.prepareStatement(sqlQuery1);
             PreparedStatement ps2 = con.prepareStatement(sqlQuery2);
             ps1.setString(1, userId);
             ps2.setString(1, userId);
+            ps2.setString(2, "APPROVED");
 
             ResultSet rs1 = ps1.executeQuery();
             ResultSet rs2 = ps2.executeQuery();
 
-            if (rs1.isBeforeFirst()) {
+            if (rs2.isBeforeFirst() && rs1.isBeforeFirst()) {
                 System.out.println("\n" + "\n" + "\t\t\t" + "ATS BUS PASS" + "\t\t\t" + "\n");
                 System.out.println("PassId: " + rs1.getInt("pass_id") + "\t\t\t\t" + "BusId: " + rs1.getInt("bus_id"));
                 System.out.println("Name: " + userName);
                 System.out.println("Stop: " + rs2.getString("stop") + "\t\t\t\t" + "Route: " + rs1.getString("route"));
+                System.out.println("DATE: " + rs2.getString("change_date"));
                 System.out.println();
+            } else {
+                System.out.println("Error in DATABASE");
             }
             ps1.close();
             ps2.close();
@@ -153,8 +152,9 @@ public class UserFactory {
         }
     }
 
-//    public static void main(String[] args) {
-//        new UserFactory("ankusha", "ankush").printMyPass();
+    //To be decided..
+//    public void viewStops() {
+//        calling_route.viewAllStops();
 //    }
 }
 

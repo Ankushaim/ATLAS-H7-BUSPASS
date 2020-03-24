@@ -22,40 +22,21 @@ public class RouteMaster {
                 }
             }catch (SQLException e){System.out.println(e.getMessage());}
 
-            System.out.print("Active Routes"+"\n");
+            System.out.println("\n" + "** Active Routes **");
             assert routes != null; // This is compiler suggestion need to check working
             for(String obj: routes) {
                 sql = "select distinct stops from route_info where route='"+obj+"' ";
                 try {
                     PreparedStatement stmt = con.prepareStatement(sql);
                     ResultSet rs = stmt.executeQuery();
-                    System.out.print("Route  "+obj+"-Start");
+                    System.out.print("Route  " + obj + "--> Start");
                     while(rs.next()) {
                         System.out.print("--"+rs.getString("stops"));
                     }
-                    System.out.print("  End"+"\n");
+                    System.out.print("--End" + "\n");
                 }catch (SQLException e) {System.out.println(e.getMessage());}
             }
             //JdbcConnect.closeCon(con);
-        }
-    }
-
-    void viewAllStops() {
-        Connection con = JdbcConnect.connect();
-        if(con != null)
-        {
-            String sql = "select stop_name , area from stop_info order by area";
-            try {
-                PreparedStatement pstSel  = con.prepareStatement(sql);
-                ResultSet rs = pstSel.executeQuery();
-                while(rs.next()) {
-                    System.out.print("Stop Name -"+rs.getString("stop_name"));
-                    System.out.print(":: Area -"+rs.getString("area")+"\n");
-                }
-            }catch (SQLException e) { System.out.println(e.getMessage());}
-//            finally {
-//                JdbcConnect.closeCon(con);
-//            }
         }
     }
 
@@ -108,14 +89,73 @@ public class RouteMaster {
             try (
                     PreparedStatement pstUpdt = con.prepareStatement(sql)) {
                 pstUpdt.executeUpdate();
-            } catch (SQLException e) { System.out.println(e.getMessage());}
-            System.out.println("Stop Request sent for :"+ login+"\nApproval : PENDING");
-            //input.close();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+            System.out.println("Stop Request sent for :" + login + "\nApproval : PENDING");
             JdbcConnect.closeCon(con);
             return true;
         }
         return false;
     }
+
+    public void seatsOccupiedInRoute() throws SQLException {
+        Connection con = JdbcConnect.connect();
+        ArrayList<String> routes = null;
+        if (con != null) // check
+        {
+            String sql = "select distinct route from route_info";
+            try {
+                PreparedStatement stmt = con.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery();
+                routes = new ArrayList<>();
+                while (rs.next()) {
+                    routes.add(rs.getString("route"));
+                }
+                stmt.close();
+                rs.close();
+                con.close();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+
+            assert routes != null;
+            for (String s : routes) {
+                String denominatorSQL = "select sum(category_id) as denom from bus_table where route = '" + s + "'";
+                SQLSelect sqlRun = new SQLSelect();
+                ResultSet rs = sqlRun.SqlSelectStatement(denominatorSQL);
+                Double denominator = rs.getDouble("denom");
+
+                String NumeratoeSQL = "select count(distinct user_id) as numer from pass_details a join bus_table b on a.bus_id = b.bus_id where a.route = '" + s + "'";
+                SQLSelect sqlRun2 = new SQLSelect();
+                ResultSet rs2 = sqlRun2.SqlSelectStatement(NumeratoeSQL);
+                Double numerator = rs2.getDouble("numer");
+
+                Double percentage = ((numerator / denominator) * 100);
+
+                if (percentage.isNaN())
+                    System.out.println(s + ": --> " + "No bus running on this route ");
+                else
+                    System.out.println(s + ": --> " + String.format("%.2f", percentage) + " seats occupied");
+            }
+        }
+    }
+
+//    void viewAllStops() {
+//        Connection con = JdbcConnect.connect();
+//        if(con != null)
+//        {
+//            String sql = "select stop_name , area from stop_info order by area";
+//            try {
+//                PreparedStatement pstSel  = con.prepareStatement(sql);
+//                ResultSet rs = pstSel.executeQuery();
+//                while(rs.next()) {
+//                    System.out.print("Stop Name -"+rs.getString("stop_name"));
+//                    System.out.print(":: Area -"+rs.getString("area")+"\n");
+//                }
+//            }catch (SQLException e) { System.out.println(e.getMessage());}
+//        }
+//    }
 }
 
 

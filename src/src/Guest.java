@@ -10,10 +10,9 @@ public class Guest {
     static void printOptionsGuest() {
         System.out.print("1. View All Routes: " + "\t");
         System.out.println("2. Percentage of seats occupied in each route: " + "\t");
-        System.out.print("3. Raise a Request to add new Stop: " + "\t");
-        System.out.println("4. SignUp Apply for Bus Pass: " + "\t");
-        System.out.println("5. To previous Menu: " + "\t");
-        System.out.println("6. To Logout: " + "\t");
+        System.out.print("3. SignUp and Apply for Bus Pass: " + "\t");
+        System.out.println("4. To previous Menu: " + "\t");
+        System.out.println("5. To Logout: " + "\t");
     }
 
     static void pressAnyKeyToContinue() {
@@ -24,7 +23,7 @@ public class Guest {
 
     void view_controller_guest() {
         System.out.println("Welcome");
-        GuestFactory calling_route = new GuestFactory();
+        GuestFactory calling_guest = new GuestFactory();
         printOptionsGuest();
         boolean flag = true;
         boolean error;
@@ -44,23 +43,28 @@ public class Guest {
 
             switch (choice) {
                 case 1:
-                    calling_route.getRouteFromRouteMaster();
+                    calling_guest.getRouteFromRouteMaster();
                     pressAnyKeyToContinue();
                     printOptionsGuest();
                     break;
-                case 4:
+                case 2:
+                    calling_guest.seatOccupancyCheck();
+                    pressAnyKeyToContinue();
+                    printOptionsGuest();
+                    break;
+                case 3:
                     try {
-                        calling_route.register();
+                        calling_guest.register();
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
                     pressAnyKeyToContinue();
                     printOptionsGuest();
                     break;
-                case 5:
+                case 4:
                     flag = false;
                     break;
-                case 6:
+                case 5:
                     System.exit(0);
                     break;
                 default:

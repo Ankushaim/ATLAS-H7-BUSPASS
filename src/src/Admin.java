@@ -28,9 +28,9 @@ public class Admin {
     static void printOptionsAdmin() {
         System.out.println();
         System.out.print("1. View Requests: " + "\t");
-        System.out.print("2. Appoint/Change Bus Driver: "+ "\t");
-        System.out.println("3. Generate Report: " + "\t");
-        System.out.print("4. Add Remove Routes: " + "\t");
+        System.out.print("2. Generate Reports: " + "\t");
+        System.out.println("3. Add New Route: " + "\t");
+        System.out.print("4. Remove existing Route: " + "\t");
         System.out.print("5. Change Bus type on Routes: " + "\t");
         System.out.println("6. Assign Available Bus on Route: " + "\t");
         System.out.print("7. View Vehicle List of different Type: " + "\t");
@@ -69,6 +69,19 @@ public class Admin {
             switch (choice) {
                 case 1:
                     calling_admin.viewRequests();
+                    pressAnyKeyToContinue();
+                    printOptionsAdmin();
+                    break;
+//                case 3:
+//                    calling_admin.addNewRoute();
+//                    pressAnyKeyToContinue();
+//                    printOptionsAdmin();
+//                    break;
+                case 4:
+                    if (calling_admin.removeRoute())
+                        System.out.println("Route Removed Successfully");
+                    else
+                        System.out.println("Route can not be removed please check if any bus/user active on route");
                     pressAnyKeyToContinue();
                     printOptionsAdmin();
                     break;

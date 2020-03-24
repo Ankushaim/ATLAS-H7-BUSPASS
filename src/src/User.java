@@ -80,11 +80,11 @@ public class User {
                     pressAnyKeyToContinue();
                     printOptionsUser();
                     break;
-                case 3:
-                    calling_user.viewStops();// To be decided..
-                    pressAnyKeyToContinue();
-                    printOptionsUser();
-                    break;
+//                case 3:
+//                    calling_user.viewStops();// To be decided..
+//                    pressAnyKeyToContinue();
+//                    printOptionsUser();
+//                    break;
                 case 7:
                     calling_user.printMyPass();
                     pressAnyKeyToContinue();

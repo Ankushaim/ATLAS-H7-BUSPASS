@@ -1,7 +1,4 @@
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -21,6 +18,96 @@ public class AdminFactory {
             e.printStackTrace();
         }
     }
+
+    void addNewRoute() {
+        System.out.println("Below are the active Routes" + "\n");
+        RouteMaster ob = new RouteMaster();
+        ob.viewAllRoutes();
+
+        System.out.println("\n" + "Select direction of new route:  EAST , WEST , NORTH , SOUTH" + "\n");
+        String direction = input.next().toUpperCase();
+
+        if (JdbcConnect.connect() != null) // provide available stops
+        {
+            String sql = "select stop, direction from stop_info where stop not in(select distinct stops from route_info) and direction='" + direction + "'"; //
+            try (
+                    Statement stmt = JdbcConnect.connect().createStatement();
+                    ResultSet rs = stmt.executeQuery(sql)
+            ) {
+                System.out.println("Available stops at :" + direction);
+                while (rs.next()) {
+                    System.out.print("Stop Name -" + rs.getString("stop") + "\n");
+                }
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+        System.out.println("Write ' , ' seperated Stop names from available Stops" + "\n");
+
+        String[] stoplist = null;
+
+        stoplist = input.next().toUpperCase().split(",");
+
+        //sql statement to update user's selected route
+        int s = routes.size() + 1; // error on this line...
+        String route = "R" + s;
+
+        for (String obj1 : stoplist) {
+            String sql = "INSERT INTO route_info (route,stops,direction)"
+                    + "VALUES ('" + route + "','" + obj1 + "','" + direction + "')";
+
+            if (JdbcConnect.connect() != null) {
+                try (Connection conn = JdbcConnect.connect();
+                     PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                    pstmt.executeUpdate();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+        System.out.println("Added route :" + route);
+
+    }
+
+    boolean removeRoute() {
+        RouteMaster ob = new RouteMaster();
+
+        ob.viewAllRoutes();
+        System.out.println("Provide the route you would like to delete");
+        String route = input.next().toUpperCase();
+
+        String sql = "SELECT status FROM user_info where status = 'ACTIVE' AND stop IN (select stops from route_info where route = '" + route + "') ";
+
+        if (JdbcConnect.connect() != null) //
+        {
+            try (
+                    Statement stmt = JdbcConnect.connect().createStatement();
+                    ResultSet rs = stmt.executeQuery(sql)
+            ) {
+                while (rs.next()) {
+                    System.out.print("Route cannot be deleted as it is " + rs.getString("status") + "\n");
+                    return false;
+                }
+            } catch (SQLException e) {
+                System.out.println("Route is not in use. Delete will be executed");
+            }
+        }
+
+        sql = "DELETE FROM route_info WHERE route=  '" + route + "'";
+
+        if (JdbcConnect.connect() != null) {
+            try (Connection conn = JdbcConnect.connect();
+                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        System.out.println("Deleted :" + route);
+        return true;
+    }
+
 
     String regNumberCheck() {
         regNumber = input.nextLine();
@@ -138,8 +225,7 @@ public class AdminFactory {
         }
     }
 
-    void ChangeVehicleTypeofRoute()
-    {
+    void ChangeVehicleTypeofRoute() {
         String route = UserRouteValue();
         try {
             calling_busMaster.ChangeBusTypeOfRoute(route);
