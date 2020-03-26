@@ -2,36 +2,39 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
-public class User {
+public class User extends Profile {
     String userId;
     String userName = null;
-    Connection con = JdbcConnect.connect();
-    User(String userId) {
+    Connection conn;
+    UserRouteMaster userRoute = new UserRouteMaster();
 
-        if (con != null) {
+    User(String userId, Connection conn) {
+        this.conn = conn;
+        if (conn != null) {
             String sql = "select user_name from user_info where login = ?";
             try {
-                PreparedStatement pstSel = con.prepareStatement(sql);
-                pstSel.setString(1,userId);
+                PreparedStatement pstSel = this.conn.prepareStatement(sql);
+                pstSel.setString(1, userId);
                 ResultSet rs = pstSel.executeQuery();
-                this.userName = rs.getString("user_name");
+                while (rs.next())
+                    this.userName = rs.getString("user_name");
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
-            finally {JdbcConnect.closeCon(con);}
         }
         this.userId = userId;
-        view_controller_user();
+        viewControllerUser();
     }
 
-    static void printOptionsUser() {
+    void printOptions() {
         System.out.println();
         System.out.print("1. Edit or Change details: " + "\t");//done
-        System.out.print("2. View all routes: "+ "\t"); //done
-        System.out.println("3. Show my route : "+ "\t"); //done
+        System.out.print("2. View all routes: " + "\t"); //done
+        System.out.println("3. Show my route : " + "\t"); //done
         System.out.print("4. Request to cancel the Bus Pass: " + "\t");
         System.out.print("5. Request to suspend the pass: " + "\t");
         System.out.println("6. Request for new route: " + "\t");
@@ -40,22 +43,160 @@ public class User {
         System.out.println("9. To logOut: ");
     }
 
-    static void pressAnyKeyToContinue() {
-        System.out.print("Press Enter/Return key to continue...");
-        Scanner scanner = new Scanner(System.in);
-        scanner.nextLine();
+    void printOptionsUserDetailsMethod() {
+        System.out.println();
+        System.out.println("Select Details to Update");
+        System.out.print("1. Phone Number: " + "\t");
+        System.out.print("2. Address: " + "\t");
+        System.out.println("3. City: " + "\t");
+        System.out.print("4. Stop: " + "\t");
+        System.out.print("5. Password: " + "\t");
+        System.out.println("6. go to previous Menu: ");
     }
 
-    void view_controller_user() {
-        System.out.println("Welcome " + userName);
-        UserFactory calling_user = new UserFactory(userId, userName);
+    void updateUserDetails() {
+        HashMap<String, String> userDetails = new HashMap<>();
+        printOptionsUserDetailsMethod();
+        boolean flag = true;
 
+        while (flag) {
+            System.out.print("Input: ");
+            Scanner input = new Scanner(System.in);
+            int choice = input.nextInt();
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter Phone Number: ");
+                    Scanner phone_num = new Scanner(System.in);
+                    userDetails.put("phone_num", Integer.toString(phone_num.nextInt()));
+                    printOptionsUserDetailsMethod();
+                    break;
+                case 2:
+                    System.out.print("Enter Address: ");
+                    Scanner address = new Scanner(System.in);
+                    userDetails.put("address", address.nextLine());
+                    pressAnyKeyToContinue();
+                    printOptionsUserDetailsMethod();
+                    break;
+                case 3:
+                    System.out.print("Enter City: ");
+                    Scanner city = new Scanner(System.in);
+                    userDetails.put("city", city.nextLine());
+                    pressAnyKeyToContinue();
+                    printOptionsUserDetailsMethod();
+                    break;
+                case 4:
+                    boolean check = false;
+                    try {
+                        check = userRoute.selectStop(userId);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    if (check) {
+                        System.out.println("Please wait for Admin's approval");
+                        System.out.println("As the stop is changed your pass is temprory deactivted for Admin approval.");
+                    } else {
+                        System.out.println("Please try again :-(");
+                    }
+                    pressAnyKeyToContinue();
+                    printOptionsUserDetailsMethod();
+                    break;
+                case 5:
+                    System.out.print("Enter Password: ");
+                    Scanner password = new Scanner(System.in);
+                    userDetails.put("password", password.nextLine());
+                    pressAnyKeyToContinue();
+                    printOptionsUserDetailsMethod();
+                    break;
+                case 6:
+                    flag = false;
+                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    LocalDate localDate = LocalDate.now();
+                    userDetails.put("change_date", dtf.format(localDate));
+                    break;
+                default:
+                    printOptionsUserDetailsMethod();
+            }
+        }
+
+        for (Map.Entry<String, String> m : userDetails.entrySet()) {
+            String sql = "UPDATE user_info SET " + m.getKey() + " = '" + m.getValue() + "' where login = '" + userId + "'";
+            if (conn != null) {
+                try {
+                    PreparedStatement pstmt = conn.prepareStatement(sql);
+                    pstmt.executeUpdate();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+    }
+
+    void printMyPass() {
+        Connection con = JdbcConnect.connect();
+        String sqlQuery1 = "SELECT pass_id, bus_id, route from pass_details WHERE login = ?";
+        String sqlQuery2 = "SELECT stop, date(change_date) as change_date from user_info WHERE login = ? AND status = ?";
+        try {
+            PreparedStatement ps1 = con.prepareStatement(sqlQuery1);
+            PreparedStatement ps2 = con.prepareStatement(sqlQuery2);
+            ps1.setString(1, userId);
+            ps2.setString(1, userId);
+            ps2.setString(2, "APPROVED");
+
+            ResultSet rs1 = ps1.executeQuery();
+            ResultSet rs2 = ps2.executeQuery();
+
+            if (rs2.isBeforeFirst() && rs1.isBeforeFirst()) {
+                while (rs1.next() && rs2.next()) {
+                    System.out.println("\n" + "\n" + "\t\t\t" + "ATS BUS PASS" + "\t\t\t" + "\n");
+                    System.out.println("PassId: " + rs1.getInt("pass_id") + "\t\t\t\t" + "BusId: " + rs1.getInt("bus_id"));
+                    System.out.println("Name: " + userName);
+                    System.out.println("Stop: " + rs2.getString("stop") + "\t\t\t\t" + "Route: " + rs1.getString("route"));
+                    System.out.println("DATE: " + rs2.getString("change_date"));
+                    System.out.println();
+                }
+            } else {
+                System.out.println("No Pass found Please contact Facility");
+            }
+            ps1.close();
+            ps2.close();
+            rs1.close();
+            rs2.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void cancelPass(String login) {
+        ArrayList<String> sql = new ArrayList<>();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate localDate = LocalDate.now();
+
+        sql.add("DELETE from pass_details where login = '" + login + "'");
+        sql.add("UPDATE user_info SET status = 'INACTIVE', change_date = '" + dtf.format(localDate) + "' WHERE login= '" + login + "' ");
+
+        if (conn != null) {
+            for (String obj : sql) {
+                try (PreparedStatement pstmt = conn.prepareStatement(obj)) {
+                    if (pstmt.executeUpdate() == 0) { //if update unsuccessful throw error
+                        System.out.println("Operation failed" + "\n" + "User INACTIVE");
+                        return;
+                    }
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+        System.out.println("Pass Canceled for :" + login + "\n");
+    }
+
+    void viewControllerUser() {
+        System.out.println("Welcome " + userName);
+//        UserFactory calling_user = new UserFactory(userId, userName);
         System.out.println("Select appropriate activity to perform");
-        printOptionsUser();
+        printOptions();
         boolean flag = true;
         boolean error;
         while (flag) {
-
             int choice = 0;
             do {
                 try {
@@ -71,24 +212,29 @@ public class User {
 
             switch (choice) {
                 case 1:
-                    calling_user.updateUserDetails();
+                    updateUserDetails();
                     pressAnyKeyToContinue();
-                    printOptionsUser();
+                    printOptions();
                     break;
                 case 2:
-                    calling_user.viewRoute();
+                    userRoute.viewAllRoutes();
                     pressAnyKeyToContinue();
-                    printOptionsUser();
+                    printOptions();
                     break;
-//                case 3:
-//                    calling_user.viewStops();// To be decided..
-//                    pressAnyKeyToContinue();
-//                    printOptionsUser();
-//                    break;
-                case 7:
-                    calling_user.printMyPass();
+                case 3:
+                    userRoute.viewMyRoute(userId);
                     pressAnyKeyToContinue();
-                    printOptionsUser();
+                    printOptions();
+                    break;
+                case 4:
+                    cancelPass(userId);
+                    pressAnyKeyToContinue();
+                    printOptions();
+                    break;
+                case 7:
+                    printMyPass();
+                    pressAnyKeyToContinue();
+                    printOptions();
                     break;
                 case 8:
                     flag = false;
@@ -98,7 +244,7 @@ public class User {
                     break;
                 default:
                     System.out.print("Select valid activity to perform");
-                    printOptionsUser();
+                    printOptions();
             }
         }
     }

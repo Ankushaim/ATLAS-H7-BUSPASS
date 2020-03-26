@@ -2,30 +2,37 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class Admin {
+public class Admin extends Profile {
     String userId;
     String adminName = null;
-    Connection con = JdbcConnect.connect();
+    Connection conn;
+    Scanner input = new Scanner(System.in);
 
-    public Admin(String userId) {
-        if (con != null) {
+    public Admin(String userId, Connection conn) {
+        this.conn = conn;
+        if (conn != null) {
             String sql = "select user_name from user_info where login = ?";
             try {
-                PreparedStatement pstSel = con.prepareStatement(sql);
+                PreparedStatement pstSel = conn.prepareStatement(sql);
                 pstSel.setString(1, userId);
                 ResultSet rs = pstSel.executeQuery();
-                this.adminName = rs.getString("user_name");
-            } catch (SQLException e) {System.out.println(e.getMessage());}
-            finally {JdbcConnect.closeCon(con);}
+                while (rs.next())
+                    this.adminName = rs.getString("user_name");
+                rs.close();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
         }
         this.userId = userId;
-        view_controller_admin();
+        viewControllerAdmin();
+
     }
 
-    static void printOptionsAdmin() {
+    void printOptions() {
         System.out.println();
         System.out.print("1. View Requests: " + "\t");
         System.out.print("2. Generate Reports: " + "\t");
@@ -39,17 +46,39 @@ public class Admin {
         System.out.println("10. To Logout: " + "\t");
     }
 
-    static void pressAnyKeyToContinue() {
-        System.out.print("Press Enter/Return key to continue...");
-        Scanner scanner = new Scanner(System.in);
-        scanner.nextLine();
+    String UserRouteValue() {
+        SQLSelect sel = new SQLSelect(conn);
+        ArrayList<String> routes = new ArrayList<>();
+        String sql = "select distinct route from route_info where route is not null";
+
+        try {
+            ResultSet rs2 = sel.SqlSelectStatement(sql);
+            while (rs2.next())
+                routes.add(rs2.getString("route"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Available routes are:");
+        for (String s : routes) {
+            System.out.print(s + "\t");
+        }
+        String route;
+        do {
+            System.out.print("\n" + "Input: ");
+            route = input.nextLine().toUpperCase();
+        } while (!routes.contains(route));
+        return route;
     }
 
-    void view_controller_admin() {
+    void viewControllerAdmin() {
         System.out.println("Welcome " + adminName);
-        AdminFactory calling_admin = new AdminFactory();
+        BusMaster busMaster = new BusMaster(conn);
+        AdminRouteMaster callingAdminRoute = new AdminRouteMaster(conn);
+        ViewRequests viewRequest = new ViewRequests(conn);
         Scanner input;
-        printOptionsAdmin();
+        String route;
+        printOptions();
         boolean flag = true;
         boolean error;
         while (flag) {
@@ -68,37 +97,61 @@ public class Admin {
 
             switch (choice) {
                 case 1:
-                    calling_admin.viewRequests();
+                    try {
+                        viewRequest.PendingBusPassRequests();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                     pressAnyKeyToContinue();
-                    printOptionsAdmin();
+                    printOptions();
                     break;
-//                case 3:
-//                    calling_admin.addNewRoute();
-//                    pressAnyKeyToContinue();
-//                    printOptionsAdmin();
-//                    break;
+                case 3:
+                    callingAdminRoute.addNewRoute();
+                    pressAnyKeyToContinue();
+                    printOptions();
+                    break;
                 case 4:
-                    if (calling_admin.removeRoute())
+                    if (callingAdminRoute.removeRoute())
                         System.out.println("Route Removed Successfully");
                     else
                         System.out.println("Route can not be removed please check if any bus/user active on route");
                     pressAnyKeyToContinue();
-                    printOptionsAdmin();
+                    printOptions();
                     break;
                 case 5:
-                    calling_admin.ChangeVehicleTypeofRoute();
+                    route = UserRouteValue();
+                    try {
+                        busMaster.ChangeBusTypeOfRoute(route);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                     pressAnyKeyToContinue();
-                    printOptionsAdmin();
+                    printOptions();
                     break;
                 case 6:
-                    calling_admin.assignBusToRoute();
+                    route = UserRouteValue();
+                    try {
+                        busMaster.AddBusInRoute(route);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                     pressAnyKeyToContinue();
-                    printOptionsAdmin();
+                    printOptions();
+                    break;
+                case 7:
+                    try {
+                        String sel = "select distinct category_id, count(distinct bus_id) as num from bus_table where route is not null group by 1";
+                        busMaster.vehicleDifferentTypes(sel);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    pressAnyKeyToContinue();
+                    printOptions();
                     break;
                 case 8:
-                    calling_admin.registerBus();
+                    busMaster.registerBus();
                     pressAnyKeyToContinue();
-                    printOptionsAdmin();
+                    printOptions();
                     break;
                 case 9:
                     flag = false;
@@ -107,7 +160,7 @@ public class Admin {
                     System.exit(0);
                 default:
                     System.out.print("Select valid activity to perform");
-                    printOptionsAdmin();
+                    printOptions();
             }
         }
     }

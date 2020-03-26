@@ -4,26 +4,50 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class SQLSelect {
-    Connection con = JdbcConnect.connect();
 
-    public ResultSet SqlSelectStatement(String sql) throws SQLException	{
-        ResultSet rs;
+    Connection conn;
 
-        if(con != null)
-        {
-            try
-            {
-                Statement stmt = con.createStatement();
-                rs = stmt.executeQuery(sql);
+    public SQLSelect(Connection conn) {
+        this.conn = conn;
+    }
+
+    public ResultSet SqlSelectStatement(String sql) throws SQLException {
+
+        ResultSet rs = null;
+        if (conn != null) {
+            String sqlToRun = sql;
+            try {
+                Statement stmt = conn.createStatement();
+                rs = stmt.executeQuery(sqlToRun);
                 return rs;
-            }
-            catch (SQLException e)
-            {
+            } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
         }
-        assert con != null;
-        con.close();
-        return null;
+        return rs;
+
+
     }
+//
+//public static void main(String[] args) throws SQLException, ClassNotFoundException  {
+//
+//    	SQLSelect ss = new SQLSelect();
+//    	Connection conn = JdbcConnect.connect();
+//
+//    	String sql= "select login from user_info";
+//    	ResultSet rs = ss.SqlSelectStatement(sql, conn);
+//    	while(rs.next()) {
+//    		System.out.println(rs.getString("login"));
+//    	}
+//    	System.out.println("j");
+//    	String sql2= "select password from user_info";
+//    	ResultSet rs2 = ss.SqlSelectStatement(sql2, conn);
+//    	while(rs2.next()) {
+//    		System.out.println(rs2.getString("password"));
+//    	}
+//
+//
+//
+//}
+
 }

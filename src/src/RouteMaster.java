@@ -5,38 +5,39 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class RouteMaster {
+public abstract class RouteMaster {
+    Connection conn = JdbcConnect.connect();
+    ArrayList<String> routes = null;
 
     void viewAllRoutes() {
-        Connection con = JdbcConnect.connect();
-        ArrayList<String> routes = null;
-        if(con != null) // check
-        {
+
+        if (conn != null) {
             String sql = "select distinct route from route_info";
-            try{
-                PreparedStatement stmt  = con.prepareStatement(sql);
+            try {
+                PreparedStatement stmt = conn.prepareStatement(sql);
                 ResultSet rs = stmt.executeQuery();
                 routes = new ArrayList<>();
-                while(rs.next()) {
+                while (rs.next()) {
                     routes.add(rs.getString("route"));
                 }
-            }catch (SQLException e){System.out.println(e.getMessage());}
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
 
             System.out.println("\n" + "** Active Routes **");
             assert routes != null; // This is compiler suggestion need to check working
             for(String obj: routes) {
                 sql = "select distinct stops from route_info where route='"+obj+"' ";
                 try {
-                    PreparedStatement stmt = con.prepareStatement(sql);
+                    PreparedStatement stmt = conn.prepareStatement(sql);
                     ResultSet rs = stmt.executeQuery();
-                    System.out.print("Route  " + obj + "--> Start");
+                    System.out.print("Route  " + obj + "--> Amazon Campus");
                     while(rs.next()) {
                         System.out.print("--"+rs.getString("stops"));
                     }
                     System.out.print("--End" + "\n");
                 }catch (SQLException e) {System.out.println(e.getMessage());}
             }
-            //JdbcConnect.closeCon(con);
         }
     }
 
@@ -97,48 +98,6 @@ public class RouteMaster {
             return true;
         }
         return false;
-    }
-
-    public void seatsOccupiedInRoute() throws SQLException {
-        Connection con = JdbcConnect.connect();
-        ArrayList<String> routes = null;
-        if (con != null) // check
-        {
-            String sql = "select distinct route from route_info";
-            try {
-                PreparedStatement stmt = con.prepareStatement(sql);
-                ResultSet rs = stmt.executeQuery();
-                routes = new ArrayList<>();
-                while (rs.next()) {
-                    routes.add(rs.getString("route"));
-                }
-                stmt.close();
-                rs.close();
-                con.close();
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-
-            assert routes != null;
-            for (String s : routes) {
-                String denominatorSQL = "select sum(category_id) as denom from bus_table where route = '" + s + "'";
-                SQLSelect sqlRun = new SQLSelect();
-                ResultSet rs = sqlRun.SqlSelectStatement(denominatorSQL);
-                Double denominator = rs.getDouble("denom");
-
-                String NumeratoeSQL = "select count(distinct user_id) as numer from pass_details a join bus_table b on a.bus_id = b.bus_id where a.route = '" + s + "'";
-                SQLSelect sqlRun2 = new SQLSelect();
-                ResultSet rs2 = sqlRun2.SqlSelectStatement(NumeratoeSQL);
-                Double numerator = rs2.getDouble("numer");
-
-                Double percentage = ((numerator / denominator) * 100);
-
-                if (percentage.isNaN())
-                    System.out.println(s + ": --> " + "No bus running on this route ");
-                else
-                    System.out.println(s + ": --> " + String.format("%.2f", percentage) + " seats occupied");
-            }
-        }
     }
 
 //    void viewAllStops() {

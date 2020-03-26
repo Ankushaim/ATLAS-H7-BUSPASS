@@ -1,8 +1,11 @@
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class BusPassRunner {
+    static Connection conn = JdbcConnect.connect();
+
     void printOptionsMain() {
         System.out.println("\n" + "Welcome to Amazon Transport Service Portal");
         System.out.println("To continue please select the below:");
@@ -20,7 +23,7 @@ public class BusPassRunner {
 
     public static void main(String[] args) throws SQLException {
         BusPassRunner runObj = new BusPassRunner();
-        Authentication authCheck = new Authentication();
+        Authentication authCheck = new Authentication(conn);
         Scanner credential_input = new Scanner(System.in);
         Scanner input;
         runObj.printOptionsMain();
@@ -43,7 +46,7 @@ public class BusPassRunner {
                 }
             } while(error);
 
-           switch (choice) {
+            switch (choice) {
                 case 1:
                     System.out.println("Sign in to continue to ATS Portal");
                     System.out.print("UserId: ");
@@ -51,9 +54,8 @@ public class BusPassRunner {
                     System.out.print("Password: ");
                     password = credential_input.nextLine();
                     if (authCheck.checkCredentials(userId, password, "admin")) {
-                        new Admin(userId);
-                    }
-                    else{
+                        new Admin(userId, conn);
+                    } else{
                         System.out.println("Invalid Credentials");
                         System.exit(0);
                     }
@@ -67,9 +69,8 @@ public class BusPassRunner {
                     System.out.print("Password: ");
                     password = credential_input.nextLine();
                     if (authCheck.checkCredentials(userId, password, "user")) {
-                        new User(userId);
-                    }
-                    else{
+                        new User(userId, conn);
+                    } else{
                         System.out.println("Invalid Credentials");
                         System.exit(0);
                     }
@@ -77,7 +78,7 @@ public class BusPassRunner {
                     runObj.printOptionsMain();
                     break;
                 case 3:
-                    new Guest();
+                    new Guest(conn);
                     pressAnyKeyToContinue();
                     runObj.printOptionsMain();
                     break;
@@ -89,7 +90,7 @@ public class BusPassRunner {
                 default:
                     System.out.println("\n"+ "Please provide valid input:");
                     System.out.println("1. Admin");
-                    System.out.println("2. Registered UserFactory");
+                    System.out.println("2. Registered");
                     System.out.println("3. Visitor");
                     System.out.println("4. To Logout");
             }
