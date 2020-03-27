@@ -58,7 +58,6 @@ public class BusPassRunner {
                         pro.viewController();
                     } else{
                         System.out.println("Invalid Credentials");
-                        System.exit(0);
                     }
                     pressAnyKeyToContinue();
                     runObj.printOptionsMain();
@@ -74,7 +73,6 @@ public class BusPassRunner {
                         pro.viewController();
                     } else {
                         System.out.println("Invalid Credentials");
-                        System.exit(0);
                     }
                     pressAnyKeyToContinue();
                     runObj.printOptionsMain();
