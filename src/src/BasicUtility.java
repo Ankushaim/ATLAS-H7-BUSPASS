@@ -1,5 +1,4 @@
 import java.util.Scanner;
-//bus pass runner route master view request can extend this..
 
 public class BasicUtility {
 

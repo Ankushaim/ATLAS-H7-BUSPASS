@@ -67,8 +67,6 @@ public class AdminRouteMaster extends RouteMaster {
         return isUploaded;
     }
 
-    
-    
 
     boolean removeRoute() {
         try {
