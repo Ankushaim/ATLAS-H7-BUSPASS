@@ -52,6 +52,7 @@ public class BusPassRunner {
                     userId = credential_input.nextLine();
                     System.out.print("Password: ");
                     password = credential_input.nextLine();
+                    System.out.println("Fetching details for: "+userId+ "\n");
 
                     if (authCheck.checkCredentials(userId, password, "admin")) {
                         pro = new Admin(userId);
@@ -68,6 +69,7 @@ public class BusPassRunner {
                     userId = credential_input.nextLine();
                     System.out.print("Password: ");
                     password = credential_input.nextLine();
+                    System.out.println("Fetching details for: "+userId+ "\n");
                     if (authCheck.checkCredentials(userId, password, "user")) {
                         pro = new User(userId);
                         pro.viewController();
@@ -78,6 +80,7 @@ public class BusPassRunner {
                     runObj.printOptionsMain();
                     break;
                 case 3:
+                	System.out.println("Fetching details.."+ "\n");
                     pro = new Guest();
                     pro.viewController();
                     pressAnyKeyToContinue();

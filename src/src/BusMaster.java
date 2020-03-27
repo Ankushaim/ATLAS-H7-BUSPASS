@@ -62,12 +62,15 @@ public class BusMaster {
         SQLSelect sqlRun = new SQLSelect();
         ResultSet rs = sqlRun.SqlSelectStatement(SQL);
 
-
-        while (rs.next()) {
-            number.add(rs.getString("num"));
-            typeBus.add(rs.getString("category_id"));
-        }
-
+        try {
+	        while (rs.next()) {
+	            number.add(rs.getString("num"));
+	            typeBus.add(rs.getString("category_id"));
+	        }
+        }catch(Exception e) {
+        	System.out.println("There is no available bus.");
+        	return send;
+        };
         int sum = 0;
         for (String s : number)
             sum = sum + Integer.parseInt(s);  // Array list declared as String bcz of heterogeneous hash map
@@ -115,30 +118,37 @@ public class BusMaster {
         return isUploaded;
     }
 
-    public void AddBusInRoute(String route) throws SQLException {
-        ArrayList<String> al;
+    public boolean AddBusInRoute(String route) throws SQLException {
+        ArrayList<String> al = null;
         HashMap<String, ArrayList<String>> rec; //
         String sql1 = "select bus_id from bus_table where route =  '" + route + "' ";
         rec = BusesInRoute(route, sql1); // To check How many busses are there in route asked by user CALLING
-        al = rec.get("numberPlate");
-
-
-        if (al.size() < 3) {
+        if(!rec.isEmpty()) {
+        	al = rec.get("numberPlate");
+        }
+        
+        if (al == null || al.size() < 3 ) {
             String sql = "select distinct category_id, count(distinct bus_id) as num from bus_table where route is null group by 1";
 
             HashMap<String, ArrayList<String>> receive;
             receive = vehicleDifferentTypes(sql);        // CALLING
+            if(receive.isEmpty()) {
+            	return false;
+            }
 //            ArrayList<String> number = new ArrayList<>();
             ArrayList<String> typeBus = receive.get("typeOfVehicle");
             System.out.println();
             System.out.println("Enter the category number from above available category to assign the bus.");
 
             boolean flag = true;
-
+            
             Scanner input = new Scanner(System.in);
 
             while (flag) {
+            	
                 String categoryAllocate = input.nextLine();
+                
+                
                 String busNum;
 
                 if (typeBus.contains(categoryAllocate)) {
@@ -157,6 +167,7 @@ public class BusMaster {
             System.out.println("Sorry, you can't allocate bus to this route as it already has three buses.");
         }
         System.out.println();
+		return true;
 
     }
 
@@ -177,8 +188,25 @@ public class BusMaster {
         System.out.println("Enter the line number of the bus to change the type.");
 
         Scanner input = new Scanner(System.in);
+        boolean error = true;
+        int busSelection = 0;
+        do {
+            try {
+            	System.out.print("Input: ");
+                input = new Scanner(System.in);
+                busSelection = input.nextInt();
+                if(busSelection != 1 && busSelection != 0 && busSelection != 2) {
+                	System.out.println("Wrong input");
+                	error=true;
+                }else {
+                	error=false;
+                }
+            } catch(InputMismatchException e) {
+                System.out.println("Invalid Input 😞 only Integers allowed");
+                error=true;
+            }
+        } while(error);
 
-        int busSelection = input.nextInt();
 
         System.out.println("Enter the new category.");
         System.out.println("For 3-Seater enter: 3");
@@ -194,7 +222,18 @@ public class BusMaster {
         }
         boolean flagCat = true;
         while (flagCat) {
-            int catSelection = input.nextInt();
+            int catSelection = 0;
+            do {
+                try {
+                    System.out.print("Input: ");
+                    input = new Scanner(System.in);
+                    catSelection = input.nextInt();
+                    error=false;
+                } catch(InputMismatchException e) {
+                    System.out.println("Invalid Input 😞 only Integers allowed");
+                    error=true;
+                }
+            } while(error);
 
             if (Integer.parseInt(al2.get(busSelection)) == catSelection) {
                 System.out.println("Bus belongs to same category. Please enter new category.");
