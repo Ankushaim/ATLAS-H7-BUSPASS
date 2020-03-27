@@ -23,16 +23,16 @@ public class BusPassRunner {
 
     public static void main(String[] args) throws SQLException {
         BusPassRunner runObj = new BusPassRunner();
-        Authentication authCheck = new Authentication(conn);
-        Scanner credential_input = new Scanner(System.in);
-        Scanner input;
         runObj.printOptionsMain();
-
+        Profile pro;
+        Scanner credential_input = new Scanner(System.in);
+        Authentication authCheck = new Authentication(conn);
+        Scanner input;
         String userId;
         String password;
         boolean flag = true;
         boolean error;
-        while(flag) {
+        while (flag) {
             int choice = 0;
             do {
                 try {
@@ -53,8 +53,10 @@ public class BusPassRunner {
                     userId = credential_input.nextLine();
                     System.out.print("Password: ");
                     password = credential_input.nextLine();
+
                     if (authCheck.checkCredentials(userId, password, "admin")) {
-                        new Admin(userId, conn);
+                        pro = new Admin(userId);
+                        pro.viewController();
                     } else{
                         System.out.println("Invalid Credentials");
                         System.exit(0);
@@ -69,8 +71,9 @@ public class BusPassRunner {
                     System.out.print("Password: ");
                     password = credential_input.nextLine();
                     if (authCheck.checkCredentials(userId, password, "user")) {
-                        new User(userId, conn);
-                    } else{
+                        pro = new User(userId);
+                        pro.viewController();
+                    } else {
                         System.out.println("Invalid Credentials");
                         System.exit(0);
                     }
@@ -78,17 +81,21 @@ public class BusPassRunner {
                     runObj.printOptionsMain();
                     break;
                 case 3:
-                    new Guest(conn);
+                    pro = new Guest();
+                    pro.viewController();
                     pressAnyKeyToContinue();
                     runObj.printOptionsMain();
                     break;
                 case 4:
                     System.out.println("Thanks for visiting");
                     credential_input.close();
+                    conn.close();
+                    Profile.conn.close();
+                    SQLMain.conn.close();
                     flag = false;
                     break;
                 default:
-                    System.out.println("\n"+ "Please provide valid input:");
+                    System.out.println("\n" + "Please provide valid input:");
                     System.out.println("1. Admin");
                     System.out.println("2. Registered");
                     System.out.println("3. Visitor");

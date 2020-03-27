@@ -1,6 +1,8 @@
 import java.util.Scanner;
+//bus pass runner route master view request can extend this..
 
 public class BasicUtility {
+
     static Scanner inp = new Scanner(System.in);
 
     //    static void pressAnyKeyToContinue() {

@@ -1,4 +1,3 @@
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -8,17 +7,12 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Guest extends Profile {
-    Connection conn;
-    Scanner input = new Scanner(System.in);
-    UserRouteMaster userRoute = new UserRouteMaster();
-
-    public Guest(Connection conn) {
-        this.conn = conn;
-        viewControllerGuest();
-    }
+    //Connection conn = Profile.conn;
+    //Scanner input = new Scanner(System.in);
+    //UserRouteMaster userRoute = new UserRouteMaster();
 
     void printOptions() {
-        System.out.print("1. View All Routes: " + "\t");
+        System.out.print("\n" + "1. View All Routes: " + "\t");
         System.out.println("2. Percentage of seats occupied in each route: " + "\t");
         System.out.print("3. SignUp and Apply for Bus Pass: " + "\t");
         System.out.println("4. To previous Menu: " + "\t");
@@ -26,6 +20,7 @@ public class Guest extends Profile {
     }
 
     void register() throws SQLException {
+        Scanner input = new Scanner(System.in);
         String sqlQuery = "INSERT INTO user_info(user_name, login, password, phone_num, address, city, status, type, create_date, change_date) values(?,?,?,?,?,?,?,?,?,?)";
         PreparedStatement pstIns = conn.prepareStatement(sqlQuery);
 
@@ -103,6 +98,7 @@ public class Guest extends Profile {
             }
             pstIns.executeUpdate();
             System.out.println("Registration Successful");
+            UserRouteMaster userRoute = new UserRouteMaster();
             if (userRoute.selectStop(login)) {
                 System.out.println("Please wait for Admin's approval on your ATS pass request :-)");
             } else {
@@ -113,10 +109,10 @@ public class Guest extends Profile {
         }
     }
 
-    void viewControllerGuest() {
-        System.out.println("Welcome");
-        GuestRouteMaster guestRoute = new GuestRouteMaster();
+    void viewController() {
+        System.out.println("\n" + "Welcome Guest");
         printOptions();
+        GuestRouteMaster guestRoute = new GuestRouteMaster();
         boolean flag = true;
         boolean error;
         while (flag) {
@@ -135,13 +131,13 @@ public class Guest extends Profile {
 
             switch (choice) {
                 case 1:
-                    guestRoute.viewAllRoutes();
+                    guestRoute.viewAllRoutes(conn);
                     pressAnyKeyToContinue();
                     printOptions();
                     break;
                 case 2:
                     try {
-                        guestRoute.seatsOccupiedInRoute();
+                        guestRoute.seatsOccupiedInRoute(conn);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }

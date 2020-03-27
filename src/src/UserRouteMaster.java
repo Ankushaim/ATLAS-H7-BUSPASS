@@ -1,10 +1,11 @@
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserRouteMaster extends RouteMaster {
 
-    void viewMyRoute(String userId) {
+    void viewMyRoute(String userId, Connection conn) {
         String sql = "select distinct route from pass_details where login = '" + userId + "' ";
         String route = null;
         try {

@@ -15,7 +15,7 @@ public class ViewRequests {
 
     public ArrayList<String> StopExistsInRoute(String stop) throws SQLException {
         String SQL = "select distinct route, stop from stop_info a join route_info b on a.stop = b.stops where stop = '" + stop + "'";
-        SQLSelect sqlRun = new SQLSelect(conn);
+        SQLSelect sqlRun = new SQLSelect();
         ResultSet rs = sqlRun.SqlSelectStatement(SQL);
         ArrayList<String> RoutesFromDB = new ArrayList();
         while (rs.next()) {
@@ -35,7 +35,7 @@ public class ViewRequests {
             }
         }
         String SQL2 = "Select bus_id, category_id from bus_table where route in (" + intlist + ")";
-        SQLSelect sqlRun2 = new SQLSelect(conn);
+        SQLSelect sqlRun2 = new SQLSelect();
         ResultSet rs2 = sqlRun2.SqlSelectStatement(SQL2);
         HashMap<String, Integer> busCap = new HashMap<>();
         try {
@@ -61,7 +61,7 @@ public class ViewRequests {
         }
 
         String SQL3 = "Select bus_id, count(distinct a.login) as num from pass_details a join user_info b on a.login = b.login where bus_id in (" + busses + ") and status = 'APPROVED' group by 1";
-        SQLSelect sqlRun3 = new SQLSelect(conn);
+        SQLSelect sqlRun3 = new SQLSelect();
         ResultSet rs3 = sqlRun3.SqlSelectStatement(SQL3);
         HashMap<String, Integer> userInBus = new HashMap<>();
         try {
@@ -76,7 +76,7 @@ public class ViewRequests {
     }
 
     boolean GenerateBussPass(String login, Object object) throws SQLException {
-        SQLUpdate su = new SQLUpdate(conn);
+        SQLUpdate su = new SQLUpdate();
         HashMap<String, String> colValues = new HashMap<>();
         HashMap<String, String> where = new HashMap<>();
         String tableName = "user_info";
@@ -89,14 +89,14 @@ public class ViewRequests {
         where.put("login", "'" + login + "'");
         isUploaded = su.ExecuteUpdate(tableName, colValues, where);
 
-        SQLSelect sqlRun = new SQLSelect(conn);
+        SQLSelect sqlRun = new SQLSelect();
         String SQL = "select distinct route from bus_table where bus_id = '" + object + "'";
         ResultSet rs = sqlRun.SqlSelectStatement(SQL);
         String route = null;
         while (rs.next())
             route = rs.getString("route");
 
-        SQLInsert si = new SQLInsert(conn);
+        SQLInsert si = new SQLInsert();
         HashMap<String, String> colValuesInsert = new HashMap<>();
         String tableName2 = "pass_details";
         colValuesInsert.put("bus_id", (String) object);
@@ -109,7 +109,7 @@ public class ViewRequests {
 
 
     public boolean PendingBusPassRequests() throws SQLException {
-        SQLSelect sqlRun = new SQLSelect(conn);
+        SQLSelect sqlRun = new SQLSelect();
         String SQL = "select login, stop from user_info where type = 'user' and status = 'PENDING' order by date(change_date) ";
         ResultSet rs = sqlRun.SqlSelectStatement(SQL);
         ArrayList<String> pendingLogins = new ArrayList();

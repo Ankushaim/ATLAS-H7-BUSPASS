@@ -1,6 +1,8 @@
+import java.sql.Connection;
 import java.util.Scanner;
 
 public abstract class Profile {
+    static Connection conn = JdbcConnect.connect();
 
     static void pressAnyKeyToContinue() {
         System.out.print("Press Enter/Return key to continue...");
@@ -10,5 +12,5 @@ public abstract class Profile {
 
     abstract void printOptions();
 
-
+    abstract void viewController();
 }

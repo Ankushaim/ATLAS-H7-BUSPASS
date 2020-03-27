@@ -1,4 +1,3 @@
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,25 +8,24 @@ import java.util.*;
 public class User extends Profile {
     String userId;
     String userName = null;
-    Connection conn;
     UserRouteMaster userRoute = new UserRouteMaster();
 
-    User(String userId, Connection conn) {
-        this.conn = conn;
+    User(String userId) {
         if (conn != null) {
             String sql = "select user_name from user_info where login = ?";
             try {
-                PreparedStatement pstSel = this.conn.prepareStatement(sql);
+                PreparedStatement pstSel = conn.prepareStatement(sql);
                 pstSel.setString(1, userId);
                 ResultSet rs = pstSel.executeQuery();
                 while (rs.next())
                     this.userName = rs.getString("user_name");
+                rs.close();
+                pstSel.close();
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
         }
         this.userId = userId;
-        viewControllerUser();
     }
 
     void printOptions() {
@@ -132,12 +130,11 @@ public class User extends Profile {
     }
 
     void printMyPass() {
-        Connection con = JdbcConnect.connect();
         String sqlQuery1 = "SELECT pass_id, bus_id, route from pass_details WHERE login = ?";
         String sqlQuery2 = "SELECT stop, date(change_date) as change_date from user_info WHERE login = ? AND status = ?";
         try {
-            PreparedStatement ps1 = con.prepareStatement(sqlQuery1);
-            PreparedStatement ps2 = con.prepareStatement(sqlQuery2);
+            PreparedStatement ps1 = conn.prepareStatement(sqlQuery1);
+            PreparedStatement ps2 = conn.prepareStatement(sqlQuery2);
             ps1.setString(1, userId);
             ps2.setString(1, userId);
             ps2.setString(2, "APPROVED");
@@ -147,11 +144,11 @@ public class User extends Profile {
 
             if (rs2.isBeforeFirst() && rs1.isBeforeFirst()) {
                 while (rs1.next() && rs2.next()) {
-                    System.out.println("\n" + "\n" + "\t\t\t" + "ATS BUS PASS" + "\t\t\t" + "\n");
-                    System.out.println("PassId: " + rs1.getInt("pass_id") + "\t\t\t\t" + "BusId: " + rs1.getInt("bus_id"));
-                    System.out.println("Name: " + userName);
-                    System.out.println("Stop: " + rs2.getString("stop") + "\t\t\t\t" + "Route: " + rs1.getString("route"));
+                    System.out.println("\n" + "\t\t\t" + "ATS BUS PASS" + "\t\t\t");
                     System.out.println("DATE: " + rs2.getString("change_date"));
+                    System.out.println("Name: " + userName);
+                    System.out.println("PassId: " + rs1.getInt("pass_id") + "\t\t\t\t" + "BusId: " + rs1.getInt("bus_id"));
+                    System.out.println("Stop: " + rs2.getString("stop") + "\t\t\t\t" + "Route: " + rs1.getString("route"));
                     System.out.println();
                 }
             } else {
@@ -189,10 +186,8 @@ public class User extends Profile {
         System.out.println("Pass Canceled for :" + login + "\n");
     }
 
-    void viewControllerUser() {
-        System.out.println("Welcome " + userName);
-//        UserFactory calling_user = new UserFactory(userId, userName);
-        System.out.println("Select appropriate activity to perform");
+    void viewController() {
+        System.out.println("\n" + "Welcome " + userName);
         printOptions();
         boolean flag = true;
         boolean error;
@@ -202,7 +197,7 @@ public class User extends Profile {
                 try {
                     System.out.print("Input: ");
                     Scanner input = new Scanner(System.in);
-                    choice=input.nextInt();
+                    choice = input.nextInt();
                     error=false;
                 } catch(InputMismatchException e) {
                     System.out.println("Invalid Input :-( only Integers allowed");
@@ -217,12 +212,12 @@ public class User extends Profile {
                     printOptions();
                     break;
                 case 2:
-                    userRoute.viewAllRoutes();
+                    userRoute.viewAllRoutes(conn);
                     pressAnyKeyToContinue();
                     printOptions();
                     break;
                 case 3:
-                    userRoute.viewMyRoute(userId);
+                    userRoute.viewMyRoute(userId, conn);
                     pressAnyKeyToContinue();
                     printOptions();
                     break;

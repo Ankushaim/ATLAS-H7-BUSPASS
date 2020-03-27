@@ -1,36 +1,18 @@
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
 
-public class SQLUpdate {
+public class SQLUpdate extends SQLMain {
 
-    Connection conn;
-
-    public SQLUpdate(Connection conn) {
-        this.conn = conn;
-    }
-
+//    public SQLUpdate(Connection conn) {
+//        this.conn = conn;
+//    }
 
     String sql;
 
     public static String updateSQL(String tableName, Map<String, String> columnValueMappingForSet, Map<String, String> columnValueMappingForCondition) {
         StringBuilder updateQueryBuilder = new StringBuilder();
 
-        /**
-         * Removing column that holds NULL value or Blank value...
-         */
-//	    if (!columnValueMappingForSet.isEmpty()) {
-//	        for (Map.Entry<String, String> entry : columnValueMappingForSet.entrySet()) {
-//	            if(entry.getValue() == null || entry.getValue().equals("")) {
-//	                columnValueMappingForSet.remove(entry.getKey());
-//	            }
-//	        }
-//	    }
-
-        /**
-         * Removing column that holds NULL value or Blank value...
-         */
         if (!columnValueMappingForCondition.isEmpty()) {
             for (Map.Entry<String, String> entry : columnValueMappingForCondition.entrySet()) {
                 if (entry.getValue() == null || entry.getValue().equals("")) {
@@ -66,31 +48,8 @@ public class SQLUpdate {
         return updateQueryBuilder.toString();
     }
 
-    public static void main(String[] args) throws ClassNotFoundException {
-//		SQLUpdate sqlUpd = new SQLUpdate();
-//		HashMap<String, String> colValues = new HashMap<String, String>();
-//		HashMap<String, String> where = new HashMap<String, String>();
-//		String table = "bus_table";
-//		String stopname = "E1";
-//		String login = "janeshs";
-//		String direction = "EAST";
-//
-//		colValues.put("stop", stopname);
-//		colValues.put("status", "PENDING");
-//
-//		where.put("login", "'"+login+"'");
-////		where.put("login"," SELECT stop from stop_info where direction= '"+direction+ "'");
-////
-////		String s = sqlUpd.updateSQL(table, colValues , where);
-////		System.out.println(s);
-//		sqlUpd.ExecuteUpdate(table, colValues, where);
-//
-
-
-    }
-
     boolean ExecuteUpdate(String tableName, Map<String, String> columnValueMappingForSet, Map<String, String> columnValueMappingForCondition) {
-        sql = this.updateSQL(tableName, columnValueMappingForSet, columnValueMappingForCondition);
+        sql = updateSQL(tableName, columnValueMappingForSet, columnValueMappingForCondition);
 
 
         try (

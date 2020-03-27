@@ -16,21 +16,12 @@ public class BusMaster {
         this.conn = conn;
     }
 
-    public static void main(String[] args) throws SQLException {
-        Connection conn = JdbcConnect.connect();
-        BusMaster bm = new BusMaster(conn);
-        bm.ChangeBusTypeOfRoute("R1");
-//		bm.AddBusInRoute("R1");
-
-
-    }
-
     public HashMap<String, ArrayList<String>> BusesInRoute(String route, String sql) throws SQLException {
 
         ArrayList<String> al = new ArrayList<>();
         HashMap<String, ArrayList<String>> send = new HashMap(); //
 
-        SQLSelect sqlRun = new SQLSelect(conn);
+        SQLSelect sqlRun = new SQLSelect();
         ResultSet rs = sqlRun.SqlSelectStatement(sql);
         while (rs.next()) {
             al.add(rs.getString("bus_id"));
@@ -66,7 +57,7 @@ public class BusMaster {
 
         HashMap<String, ArrayList<String>> send = new HashMap(); //
 
-        SQLSelect sqlRun = new SQLSelect(conn);
+        SQLSelect sqlRun = new SQLSelect();
         ResultSet rs = sqlRun.SqlSelectStatement(SQL);
 
 
@@ -95,7 +86,7 @@ public class BusMaster {
 
         String sql = "select bus_id from bus_table where route is null and category_id = '" + enterCategory + "'";
         String busNum = null;
-        SQLSelect sqlRun = new SQLSelect(conn);
+        SQLSelect sqlRun = new SQLSelect();
         ResultSet rs = sqlRun.SqlSelectStatement(sql);
         while (rs.next())
             busNum = rs.getString("bus_id");
@@ -103,7 +94,7 @@ public class BusMaster {
     }
 
     boolean allocateBus(String busNum, String route) {
-        SQLUpdate su = new SQLUpdate(conn);
+        SQLUpdate su = new SQLUpdate();
         HashMap<String, String> colValues = new HashMap<>();
         HashMap<String, String> where = new HashMap<>();
         String tableName = "bus_table";
@@ -187,7 +178,7 @@ public class BusMaster {
         System.out.println("For 5-Seater enter: 5");
         System.out.println("For 7-Seater enter: 7");
 
-        SQLSelect sq = new SQLSelect(conn);
+        SQLSelect sq = new SQLSelect();
         String sql1 = "Select distinct category_id from bus_table where route is null";
         ResultSet rs = sq.SqlSelectStatement(sql1);
         ArrayList<Integer> categoryIds = new ArrayList<>();
@@ -218,7 +209,7 @@ public class BusMaster {
                 allocateBus(busNum, route);
 
                 allocateBus(al.get(busSelection), null);
-                SQLUpdate su = new SQLUpdate(conn);
+                SQLUpdate su = new SQLUpdate();
                 String tableName = "pass_details";
                 HashMap<String, String> columnValueMappingForSet = new HashMap<>();
                 HashMap<String, String> columnValueMappingForCondition = new HashMap<>();

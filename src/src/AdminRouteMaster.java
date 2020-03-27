@@ -11,7 +11,7 @@ public class AdminRouteMaster extends RouteMaster {
 
     void addNewRoute() {
         System.out.println("Below are the active Routes" + "\n");
-        viewAllRoutes();
+        viewAllRoutes(conn);
         System.out.println("\n" + "Select direction of new route:  EAST , WEST , NORTH , SOUTH" + "\n");
         String direction = input.next().toUpperCase();
 
@@ -56,7 +56,7 @@ public class AdminRouteMaster extends RouteMaster {
     }
 
     boolean removeRoute() {
-        viewAllRoutes();
+        viewAllRoutes(conn);
         System.out.println("Provide the route you would like to delete");
         String route = input.next().toUpperCase();
 

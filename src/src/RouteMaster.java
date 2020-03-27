@@ -6,11 +6,10 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public abstract class RouteMaster {
-    Connection conn = JdbcConnect.connect();
+
     ArrayList<String> routes = null;
 
-    void viewAllRoutes() {
-
+    void viewAllRoutes(Connection conn) {
         if (conn != null) {
             String sql = "select distinct route from route_info";
             try {
@@ -20,6 +19,8 @@ public abstract class RouteMaster {
                 while (rs.next()) {
                     routes.add(rs.getString("route"));
                 }
+                rs.close();
+                stmt.close();
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
@@ -32,10 +33,12 @@ public abstract class RouteMaster {
                     PreparedStatement stmt = conn.prepareStatement(sql);
                     ResultSet rs = stmt.executeQuery();
                     System.out.print("Route  " + obj + "--> Amazon Campus");
-                    while(rs.next()) {
-                        System.out.print("--"+rs.getString("stops"));
+                    while (rs.next()) {
+                        System.out.print("--" + rs.getString("stops"));
                     }
                     System.out.print("--End" + "\n");
+                    rs.close();
+                    stmt.close();
                 }catch (SQLException e) {System.out.println(e.getMessage());}
             }
         }

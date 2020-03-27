@@ -1,4 +1,3 @@
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,11 +8,9 @@ import java.util.Scanner;
 public class Admin extends Profile {
     String userId;
     String adminName = null;
-    Connection conn;
-    Scanner input = new Scanner(System.in);
 
-    public Admin(String userId, Connection conn) {
-        this.conn = conn;
+    public Admin(String userId) {
+        //this.conn = conn;
         if (conn != null) {
             String sql = "select user_name from user_info where login = ?";
             try {
@@ -23,13 +20,12 @@ public class Admin extends Profile {
                 while (rs.next())
                     this.adminName = rs.getString("user_name");
                 rs.close();
+                pstSel.close();
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
         }
         this.userId = userId;
-        viewControllerAdmin();
-
     }
 
     void printOptions() {
@@ -47,7 +43,8 @@ public class Admin extends Profile {
     }
 
     String UserRouteValue() {
-        SQLSelect sel = new SQLSelect(conn);
+        Scanner input = new Scanner(System.in);
+        SQLSelect sel = new SQLSelect();
         ArrayList<String> routes = new ArrayList<>();
         String sql = "select distinct route from route_info where route is not null";
 
@@ -71,14 +68,14 @@ public class Admin extends Profile {
         return route;
     }
 
-    void viewControllerAdmin() {
-        System.out.println("Welcome " + adminName);
+    void viewController() {
+        System.out.println("\n" + "Welcome " + adminName);
+        printOptions();
         BusMaster busMaster = new BusMaster(conn);
         AdminRouteMaster callingAdminRoute = new AdminRouteMaster(conn);
         ViewRequests viewRequest = new ViewRequests(conn);
         Scanner input;
         String route;
-        printOptions();
         boolean flag = true;
         boolean error;
         while (flag) {
