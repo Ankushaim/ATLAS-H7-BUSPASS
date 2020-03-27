@@ -131,7 +131,12 @@ public class Guest extends Profile {
 
             switch (choice) {
                 case 1:
-                    guestRoute.viewAllRoutes(conn);
+					try {
+						guestRoute.viewAllRoutes();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
                     pressAnyKeyToContinue();
                     printOptions();
                     break;

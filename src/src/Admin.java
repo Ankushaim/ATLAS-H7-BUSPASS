@@ -103,7 +103,12 @@ public class Admin extends Profile {
                     printOptions();
                     break;
                 case 3:
-                    callingAdminRoute.addNewRoute();
+					try {
+						callingAdminRoute.addNewRoute();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
                     pressAnyKeyToContinue();
                     printOptions();
                     break;

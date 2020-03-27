@@ -6,42 +6,32 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public abstract class RouteMaster {
-
+    
     ArrayList<String> routes = null;
+    SQLSelect sqlRun = new SQLSelect();
+    ArrayList<String> viewAllRoutes() throws SQLException {
+        String sql = "select distinct route from route_info";
+        ResultSet rs = sqlRun.SqlSelectStatement(sql);
+        routes = new ArrayList<>();
+        while (rs.next()) {
+        		routes.add(rs.getString("route"));
+               	}rs.close();
 
-    void viewAllRoutes(Connection conn) {
-        if (conn != null) {
-            String sql = "select distinct route from route_info";
-            try {
-                PreparedStatement stmt = conn.prepareStatement(sql);
-                ResultSet rs = stmt.executeQuery();
-                routes = new ArrayList<>();
+        System.out.println("\n" + "** Active Routes **");
+        assert routes != null; // This is compiler suggestion need to check working
+        for(String obj: routes) {
+            sql = "select distinct stops from route_info where route='"+obj+"' ";
+            rs = sqlRun.SqlSelectStatement(sql);
+                
+            System.out.print("Route  " + obj + "--> Amazon Campus");
                 while (rs.next()) {
-                    routes.add(rs.getString("route"));
+                    System.out.print("--" + rs.getString("stops"));
                 }
-                rs.close();
-                stmt.close();
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-
-            System.out.println("\n" + "** Active Routes **");
-            assert routes != null; // This is compiler suggestion need to check working
-            for(String obj: routes) {
-                sql = "select distinct stops from route_info where route='"+obj+"' ";
-                try {
-                    PreparedStatement stmt = conn.prepareStatement(sql);
-                    ResultSet rs = stmt.executeQuery();
-                    System.out.print("Route  " + obj + "--> Amazon Campus");
-                    while (rs.next()) {
-                        System.out.print("--" + rs.getString("stops"));
-                    }
-                    System.out.print("--End" + "\n");
-                    rs.close();
-                    stmt.close();
-                }catch (SQLException e) {System.out.println(e.getMessage());}
-            }
-        }
+        System.out.print("--End" + "\n");
+        rs.close();
+    }
+        
+        return routes;
     }
 
     boolean selectStop(String login) throws SQLException {

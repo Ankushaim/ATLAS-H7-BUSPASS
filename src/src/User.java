@@ -212,7 +212,12 @@ public class User extends Profile {
                     printOptions();
                     break;
                 case 2:
-                    userRoute.viewAllRoutes(conn);
+					try {
+						userRoute.viewAllRoutes();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
                     pressAnyKeyToContinue();
                     printOptions();
                     break;

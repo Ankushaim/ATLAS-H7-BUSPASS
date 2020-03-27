@@ -13,8 +13,8 @@ public class Authentication {
 
     boolean checkCredentials(String log, String pass, String type) { //getting called by guest also
 
-        //String sql = "select login, password, type from user_info where login = '" + log + "' ";
-        String sql = "select login, password, type from user_info where login = ?";
+        String sql = "select login, password, type from user_info where login = '" + log + "' ";
+//        String sql = "select login, password, type from user_info where login = ?";
 //        try {
 //            PreparedStatement preparedStatement = conn.prepareStatement(sql);
 //            preparedStatement.setString(1, log);
