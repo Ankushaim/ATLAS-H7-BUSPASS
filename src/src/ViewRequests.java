@@ -7,11 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ViewRequests {
-    Connection conn;
 
-    public ViewRequests(Connection conn) {
-        this.conn = conn;
-    }
 
     public ArrayList<String> StopExistsInRoute(String stop) throws SQLException {
         String SQL = "select distinct route, stop from stop_info a join route_info b on a.stop = b.stops where stop = '" + stop + "'";

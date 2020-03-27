@@ -71,9 +71,9 @@ public class Admin extends Profile {
     void viewController() {
         System.out.println("\n" + "Welcome " + adminName);
         printOptions();
-        BusMaster busMaster = new BusMaster(conn);
-        AdminRouteMaster callingAdminRoute = new AdminRouteMaster(conn);
-        ViewRequests viewRequest = new ViewRequests(conn);
+        BusMaster busMaster = new BusMaster();
+        AdminRouteMaster callingAdminRoute = new AdminRouteMaster();
+        ViewRequests viewRequest = new ViewRequests();
         Scanner input;
         String route;
         boolean flag = true;
