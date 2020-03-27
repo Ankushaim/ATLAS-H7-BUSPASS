@@ -49,7 +49,7 @@ public class Guest extends Profile {
                 password = input.nextLine();
             }
             while (password.length() == 0);
-            if (new Authentication(conn).checkCredentials(login, password, "user"))  //To check is login already registered..
+            if (new Authentication().checkCredentials(login, password, "user"))  //To check is login already registered..
             {
                 System.out.println("User Already Exists");
                 break;

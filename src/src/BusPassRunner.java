@@ -4,7 +4,7 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class BusPassRunner {
-    static Connection conn = JdbcConnect.connect();
+
 
     void printOptionsMain() {
         System.out.println("\n" + "Welcome to Amazon Transport Service Portal");
@@ -26,7 +26,7 @@ public class BusPassRunner {
         runObj.printOptionsMain();
         Profile pro;
         Scanner credential_input = new Scanner(System.in);
-        Authentication authCheck = new Authentication(conn);
+        Authentication authCheck = new Authentication();
         Scanner input;
         String userId;
         String password;
@@ -89,7 +89,6 @@ public class BusPassRunner {
                 case 4:
                     System.out.println("Thanks for visiting");
                     credential_input.close();
-                    conn.close();
                     Profile.conn.close();
                     SQLMain.conn.close();
                     flag = false;
