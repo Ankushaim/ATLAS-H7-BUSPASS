@@ -10,6 +10,7 @@ public class Admin extends Profile {
     String adminName = null;
 
     public Admin(String userId) {
+    	
         //this.conn = conn;
         if (conn != null) {
             String sql = "select user_name from user_info where login = ?";
