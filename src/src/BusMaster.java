@@ -7,14 +7,12 @@ import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+
 public class BusMaster {
 
-    Connection conn;
     Scanner input = new Scanner(System.in);
 
-    public BusMaster(Connection conn) {
-        this.conn = conn;
-    }
+
 
     public HashMap<String, ArrayList<String>> BusesInRoute(String route, String sql) throws SQLException {
 
@@ -30,7 +28,11 @@ public class BusMaster {
 
         System.out.println("In " + route + "-route, there are total " + al.size() + " buses.");
         System.out.println();
-
+        
+        if(al.size()==0) {
+        	return send;
+        }
+        
         ArrayList<String> al2 = new ArrayList<>();
         String sql2 = "select category_id from bus_table where route =  '" + route + "' ";
         ResultSet rs2 = sqlRun.SqlSelectStatement(sql2);
@@ -158,11 +160,16 @@ public class BusMaster {
 
     }
 
-    public void ChangeBusTypeOfRoute(String route) throws SQLException {
+    public boolean ChangeBusTypeOfRoute(String route) throws SQLException {
         ArrayList<String> al;
         ArrayList<String> al2;
         String sql = "select bus_id from bus_table where route =  '" + route + "' ";
         HashMap<String, ArrayList<String>> rec = BusesInRoute(route, sql);
+        if(rec.isEmpty()) {
+        	System.out.println("In this route there are zero buses.");
+        	return false;
+        }
+
         al = rec.get("numberPlate");
         al2 = rec.get("category");
 
@@ -219,6 +226,7 @@ public class BusMaster {
                 flagCat = false;
             }
         }
+		return flagCat;
 
 
     }
@@ -265,32 +273,31 @@ public class BusMaster {
         }
 
         String check = "SELECT DISTINCT number_plate FROM bus_table";
-        String sqlQuery = "INSERT INTO bus_table(number_plate, category_id) values(?,?)";
-        PreparedStatement pstIns;
-        if (conn != null) {
-            try {
-                pstIns = conn.prepareStatement(check);
-                ResultSet rs = pstIns.executeQuery();
-                ArrayList<String> vehNum = new ArrayList<>();
-                while (rs.next()) {
-                    vehNum.add(rs.getString("number_plate"));
-                }
-                if (vehNum.contains(ob.vehicleNumber)) {
-                    System.out.println("Vehicle already Registered with ATS");
-                } else {
-                    try {
-                        pstIns = conn.prepareStatement(sqlQuery);
-                        pstIns.setString(1, ob.vehicleNumber);
-                        pstIns.setInt(2, ob.capacity);
-                        pstIns.executeUpdate();
-                        System.out.println("Vehicle Successfully Registered");
-                    } catch (SQLException e) {
-                        System.out.println(e.getMessage());
-                    }
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
+        SQLSelect sqlRun = new SQLSelect();
+        ResultSet rs = sqlRun.SqlSelectStatement(check);
+        ArrayList<String> vehNum = new ArrayList<>();
+        try {
+			while (rs.next()) {
+				vehNum.add(rs.getString("number_plate"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+        if (vehNum.contains(ob.vehicleNumber)) {
+            System.out.println("Vehicle already Registered with ATS");
+            
+        } 
+        else {
+        	SQLInsert si = new SQLInsert();
+        	HashMap<String, String> colValues = new HashMap<>();
+        	colValues.put("number_plate", ob.vehicleNumber);
+        	colValues.put("category_id", Integer.toString(ob.capacity));
+        	si.ExecuteInsert("bus_table", colValues);
+        	System.out.println("Vehicle Successfully Registered");
         }
-    }
-}
+
+                }
+            } 
+
+    
+
