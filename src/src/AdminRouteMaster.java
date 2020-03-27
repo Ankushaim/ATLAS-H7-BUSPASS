@@ -5,12 +5,10 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class AdminRouteMaster extends RouteMaster {
-    Connection conn;
+
     Scanner input = new Scanner(System.in);
 
-    public AdminRouteMaster(Connection conn) {
-        this.conn = conn;
-    }
+
 
     boolean addNewRoute() throws SQLException {
         ArrayList<String> stops = new ArrayList<>();
@@ -68,44 +66,58 @@ public class AdminRouteMaster extends RouteMaster {
     }
 
     
-    
-
     boolean removeRoute() {
+    	ArrayList<String> routes = null;
+    	String route;
         try {
-			viewAllRoutes();
+			routes= viewAllRoutes();
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-        System.out.println("Provide the route you would like to delete");
-        String route = input.next().toUpperCase();
+        do {
+        	System.out.println("Provide the route you would like to delete");
+            route = input.next().toUpperCase();
+            }while(!routes.contains(route));
+        
+        String sql = "SELECT status FROM user_info where status = 'APPROVED' AND stop IN (select stops from route_info where route = '" + route + "') ";
 
-        String sql = "SELECT status FROM user_info where status = 'ACTIVE' AND stop IN (select stops from route_info where route = '" + route + "') ";
+        ResultSet rs = sqlRun.SqlSelectStatement(sql);
+                try {
+					if (rs.next()) {
+					    System.out.print("One or more stops in the route are being used by Users\n");
+					    return false;
+					}rs.close();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+                
+          sql = "SELECT bus_id FROM bus_table where route = '" + route + "' ";
 
-        if (conn != null) {
-            try (
-                    Statement stmt = conn.createStatement();
-                    ResultSet rs = stmt.executeQuery(sql)
-            ) {
-                if (rs.next()) {
-                    System.out.print("Route cannot be deleted as it is " + rs.getString("status") + "\n");
-                    return false;
-                }
-            } catch (SQLException e) {
-                System.out.println("Route is not in use. Delete will be executed");
-            }
-        }
-
-        sql = "DELETE FROM route_info WHERE route=  '" + route + "'";
-
-        if (conn != null) {
-            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.executeUpdate();
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-        }
-        System.out.println("Deleted :" + route);
-        return true;
+          rs = sqlRun.SqlSelectStatement(sql);
+          try {
+			if (rs.next()) {
+				    System.out.print("Route cannot be deleted as it is assigned to Bus ID: "+ rs.getString("bus_id")+ "\n");
+				    return false;
+				} rs.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+          
+                
+            System.out.println("Route is not in use. Delete will be executed");
+        
+        SQLDelete sd= new SQLDelete();
+        HashMap<String,String> columnValue = new HashMap<>();
+        columnValue.put("route", " '" + route + "'");
+        if(sd.executeDelete("route_info", columnValue)) {
+        	System.out.println("Deleted :" + route);
+        	
+        	return true;}else
+        	{return false;}
+        
     }
+
 }
