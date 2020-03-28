@@ -10,9 +10,6 @@ public class Admin extends Profile {
     String adminName = null;
 
     public Admin(String userId) {
-    	
-    	
-        //this.conn = conn;
         if (conn != null) {
             String sql = "select user_name from user_info where login = ?";
             try {
@@ -33,21 +30,19 @@ public class Admin extends Profile {
     void printOptions() {
         System.out.println();
         System.out.print("1. View Requests: " + "\t");
-        System.out.print("2. Generate Reports: " + "\t");
-        System.out.println("3. Add New Route: " + "\t");
-        System.out.print("4. Remove existing Route: " + "\t");
-        System.out.print("5. Change Bus type on Routes: " + "\t");
-        System.out.println("6. Assign Available Bus on Route: " + "\t");
-        System.out.print("7. View Vehicle List of different Type: " + "\t");
-        System.out.print("8. Register a Bus to Company: " + "\t");
-        System.out.println("9. To previous Menu: " + "\t");
-        System.out.println("10. To Logout: " + "\t");
+        System.out.print("2. Add New Route: " + "\t");
+        System.out.println("3. Remove existing Route: " + "\t");
+        System.out.print("4. Change Bus type on Routes: " + "\t");
+        System.out.print("5. Assign Available Bus on Route: " + "\t");
+        System.out.println("6. View Vehicle List of different Type: " + "\t");
+        System.out.println("7. Register a Bus to Company: " + "\t");
+        System.out.println("8. To Logout: " + "\t");
     }
 
     String UserRouteValue() {
+        ArrayList<String> routes = new ArrayList<>();
         Scanner input = new Scanner(System.in);
         SQLSelect sel = new SQLSelect();
-        ArrayList<String> routes = new ArrayList<>();
         String sql = "select distinct route from route_info where route is not null";
 
         try {
@@ -57,30 +52,34 @@ public class Admin extends Profile {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         System.out.println("Available routes are:");
+
         for (String s : routes) {
             System.out.print(s + "\t");
         }
+
         String route;
         do {
             System.out.print("\n" + "Input: ");
             route = input.nextLine().toUpperCase();
         } while (!routes.contains(route));
+
         return route;
     }
 
     void viewController() {
         System.out.println("\n" + "Welcome " + adminName);
+        AdminRouteMaster callingAdminRoute = new AdminRouteMaster();
         ViewRequests viewRequest = new ViewRequests();
+        BusMaster busMaster = new BusMaster();
+
         viewRequest.Notifications();
         printOptions();
-        BusMaster busMaster = new BusMaster();
-        AdminRouteMaster callingAdminRoute = new AdminRouteMaster();      
+
         Scanner input;
         String route;
-        boolean flag = true;
-        boolean error;
+        boolean flag = true, error;
+
         while (flag) {
             int choice = 0;
             do {
@@ -105,7 +104,7 @@ public class Admin extends Profile {
                     pressAnyKeyToContinue();
                     printOptions();
                     break;
-                case 3:
+                case 2:
 					try {
 						callingAdminRoute.addNewRoute();
 					} catch (SQLException e1) {
@@ -115,7 +114,7 @@ public class Admin extends Profile {
                     pressAnyKeyToContinue();
                     printOptions();
                     break;
-                case 4:
+                case 3:
                     if (callingAdminRoute.removeRoute())
                         System.out.println("Route Removed Successfully");
                     else
@@ -123,7 +122,7 @@ public class Admin extends Profile {
                     pressAnyKeyToContinue();
                     printOptions();
                     break;
-                case 5:
+                case 4:
                     route = UserRouteValue();
                     try {
                         busMaster.ChangeBusTypeOfRoute(route);
@@ -133,7 +132,7 @@ public class Admin extends Profile {
                     pressAnyKeyToContinue();
                     printOptions();
                     break;
-                case 6:
+                case 5:
                     route = UserRouteValue();
                     try {
                         busMaster.AddBusInRoute(route);
@@ -143,7 +142,7 @@ public class Admin extends Profile {
                     pressAnyKeyToContinue();
                     printOptions();
                     break;
-                case 7:
+                case 6:
                     try {
                         String sel = "select distinct category_id, count(distinct bus_id) as num from bus_table where route is not null group by 1";
                         busMaster.vehicleDifferentTypes(sel);
@@ -153,16 +152,14 @@ public class Admin extends Profile {
                     pressAnyKeyToContinue();
                     printOptions();
                     break;
-                case 8:
+                case 7:
                     busMaster.registerBus();
                     pressAnyKeyToContinue();
                     printOptions();
                     break;
-                case 9:
+                case 8:
                     flag = false;
                     break;
-                case 10:
-                    System.exit(0);
                 default:
                     System.out.print("Select valid activity to perform");
                     printOptions();

@@ -4,10 +4,6 @@ import java.util.Map;
 
 public class SQLInsert extends SQLMain {
 
-//    public SQLInsert(Connection conn) {
-//        this.conn = conn;
-//    }
-
     String sql;
 
     public static String insertSQL(String tableName, Map<String, String> columnValueMappingForInsert) {
@@ -20,7 +16,6 @@ public class SQLInsert extends SQLMain {
                 }
             }
         }
-
         /* Making the INSERT Query... */
         insertSQLBuilder.append("INSERT INTO");
         insertSQLBuilder.append(" ").append(tableName);
@@ -60,5 +55,4 @@ public class SQLInsert extends SQLMain {
         }
         return false;
     }
-
 }

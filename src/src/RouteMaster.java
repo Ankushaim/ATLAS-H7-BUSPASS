@@ -9,28 +9,32 @@ public abstract class RouteMaster {
     
     ArrayList<String> routes = null;
     SQLSelect sqlRun = new SQLSelect();
+
     ArrayList<String> viewAllRoutes() throws SQLException {
+
         String sql = "select distinct route from route_info";
         ResultSet rs = sqlRun.SqlSelectStatement(sql);
         routes = new ArrayList<>();
+
         while (rs.next()) {
-        		routes.add(rs.getString("route"));
-               	}rs.close();
+            routes.add(rs.getString("route"));
+        }
+        rs.close();
 
         System.out.println("\n" + "** Active Routes **");
-        assert routes != null; // This is compiler suggestion need to check working
-        for(String obj: routes) {
-            sql = "select distinct stops from route_info where route='"+obj+"' ";
+        assert routes != null;
+
+        for (String obj : routes) {
+            sql = "select distinct stops from route_info where route='" + obj + "' ";
             rs = sqlRun.SqlSelectStatement(sql);
-                
             System.out.print("Route  " + obj + "--> Amazon Campus");
-                while (rs.next()) {
-                    System.out.print("--" + rs.getString("stops"));
-                }
-        System.out.print("--End" + "\n");
-        rs.close();
-    }
-        
+
+            while (rs.next()) {
+                System.out.print("--" + rs.getString("stops"));
+            }
+            System.out.print("--End" + "\n");
+            rs.close();
+        }
         return routes;
     }
 
@@ -39,16 +43,20 @@ public abstract class RouteMaster {
         Scanner input = new Scanner(System.in);
         ArrayList<String> stops = new ArrayList<>();
         ArrayList<String> directions = new ArrayList<>();
+
         System.out.println("\n" + "Enter the direction where you are looking for stop:  EAST , WEST , NORTH , SOUTH");
         System.out.print("Input: ");
+
         if (con != null) {
             String sqlQuery = "select distinct direction from stop_info;";
             PreparedStatement pstSel = con.prepareStatement(sqlQuery);
             ResultSet rs1 = pstSel.executeQuery();
+
             while (rs1.next()) {
                 directions.add(rs1.getString("direction"));
             }
             String direction;
+
             do {
                 direction = input.next().toUpperCase();
                 if (!directions.contains(direction))
@@ -62,6 +70,7 @@ public abstract class RouteMaster {
             try{
                 PreparedStatement pstSel2 = con.prepareStatement(sqlQuery2);
                 ResultSet rs2    = pstSel2.executeQuery();
+
                 while(rs2.next()) {
                     stops.add(rs2.getString("stop"));
                     System.out.print("- -" + rs2.getString("stop"));
@@ -70,6 +79,7 @@ public abstract class RouteMaster {
 
             System.out.print("\nEnter Stop Name: ");
             String stopname;
+
             do {
                 stopname = input.next().toUpperCase();
                 if (!stops.contains(stopname))
@@ -91,22 +101,6 @@ public abstract class RouteMaster {
         }
         return false;
     }
-
-//    void viewAllStops() {
-//        Connection con = JdbcConnect.connect();
-//        if(con != null)
-//        {
-//            String sql = "select stop_name , area from stop_info order by area";
-//            try {
-//                PreparedStatement pstSel  = con.prepareStatement(sql);
-//                ResultSet rs = pstSel.executeQuery();
-//                while(rs.next()) {
-//                    System.out.print("Stop Name -"+rs.getString("stop_name"));
-//                    System.out.print(":: Area -"+rs.getString("area")+"\n");
-//                }
-//            }catch (SQLException e) { System.out.println(e.getMessage());}
-//        }
-//    }
 }
 
 

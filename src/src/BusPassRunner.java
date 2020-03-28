@@ -4,7 +4,6 @@ import java.util.Scanner;
 
 public class BusPassRunner {
 
-
     void printOptionsMain() {
         System.out.println("\n" + "Welcome to Amazon Transport Service Portal");
         System.out.println("To continue please select the below:");
@@ -27,23 +26,22 @@ public class BusPassRunner {
         Scanner credential_input = new Scanner(System.in);
         Authentication authCheck = new Authentication();
         Scanner input;
-        String userId;
-        String password;
-        boolean flag = true;
-        boolean error;
+        String userId, password;
+        boolean flag = true, error;
+
         while (flag) {
             int choice = 0;
             do {
                 try {
                     System.out.print("Input: ");
                     input = new Scanner(System.in);
-                    choice=input.nextInt();
-                    error=false;
-                } catch(InputMismatchException e) {
+                    choice = input.nextInt();
+                    error = false;
+                } catch (InputMismatchException e) {
                     System.out.println("Invalid Input :-( only Integers allowed");
-                    error=true;
+                    error = true;
                 }
-            } while(error);
+            } while (error);
 
             switch (choice) {
                 case 1:

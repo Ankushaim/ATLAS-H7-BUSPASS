@@ -1,5 +1,3 @@
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,15 +10,14 @@ public class BusMaster {
 
     Scanner input = new Scanner(System.in);
 
-
-
     public HashMap<String, ArrayList<String>> BusesInRoute(String route, String sql) throws SQLException {
 
         ArrayList<String> al = new ArrayList<>();
-        HashMap<String, ArrayList<String>> send = new HashMap(); //
+        HashMap<String, ArrayList<String>> send = new HashMap();
 
         SQLSelect sqlRun = new SQLSelect();
         ResultSet rs = sqlRun.SqlSelectStatement(sql);
+
         while (rs.next()) {
             al.add(rs.getString("bus_id"));
         }
@@ -36,6 +33,7 @@ public class BusMaster {
         ArrayList<String> al2 = new ArrayList<>();
         String sql2 = "select category_id from bus_table where route =  '" + route + "' ";
         ResultSet rs2 = sqlRun.SqlSelectStatement(sql2);
+
         while (rs2.next()) {
             al2.add(rs2.getString("category_id"));
         }
@@ -47,21 +45,18 @@ public class BusMaster {
 
         send.put("numberPlate", al);
         send.put("category", al2);
-
-
         return send;
     }
 
     public HashMap<String, ArrayList<String>> vehicleDifferentTypes(String SQL) throws SQLException {
-        String sql = "select distinct category_id, count(distinct bus_id) as num from bus_table where route is null group by 1";
+
         ArrayList<String> number = new ArrayList<>();
         ArrayList<String> typeBus = new ArrayList<>();
+        HashMap<String, ArrayList<String>> send = new HashMap();
 
-        HashMap<String, ArrayList<String>> send = new HashMap(); //
-
+        String sql = "select distinct category_id, count(distinct bus_id) as num from bus_table where route is null group by 1";
         SQLSelect sqlRun = new SQLSelect();
         ResultSet rs = sqlRun.SqlSelectStatement(SQL);
-
         try {
 	        while (rs.next()) {
 	            number.add(rs.getString("num"));
@@ -71,6 +66,7 @@ public class BusMaster {
         	System.out.println("There is no available bus.");
         	return send;
         };
+
         int sum = 0;
         for (String s : number)
             sum = sum + Integer.parseInt(s);  // Array list declared as String bcz of heterogeneous hash map
@@ -93,15 +89,17 @@ public class BusMaster {
         String busNum = null;
         SQLSelect sqlRun = new SQLSelect();
         ResultSet rs = sqlRun.SqlSelectStatement(sql);
+
         while (rs.next())
             busNum = rs.getString("bus_id");
         return busNum;
     }
 
     boolean allocateBus(String busNum, String route) {
-        SQLUpdate su = new SQLUpdate();
         HashMap<String, String> colValues = new HashMap<>();
         HashMap<String, String> where = new HashMap<>();
+
+        SQLUpdate su = new SQLUpdate();
         String tableName = "bus_table";
         boolean isUploaded;
 
@@ -111,51 +109,46 @@ public class BusMaster {
         } else {
             colValues.put("route", "'" + route + "'");
         }
+
         where.put("bus_id", "'" + busNum + "'");
-
         isUploaded = su.ExecuteUpdate(tableName, colValues, where);
-
         return isUploaded;
     }
 
     public boolean AddBusInRoute(String route) throws SQLException {
         ArrayList<String> al = null;
-        HashMap<String, ArrayList<String>> rec; //
+        HashMap<String, ArrayList<String>> rec;
+
         String sql1 = "select bus_id from bus_table where route =  '" + route + "' ";
         rec = BusesInRoute(route, sql1); // To check How many busses are there in route asked by user CALLING
-        if(!rec.isEmpty()) {
-        	al = rec.get("numberPlate");
+
+        if (!rec.isEmpty()) {
+            al = rec.get("numberPlate");
         }
-        
-        if (al == null || al.size() < 3 ) {
+
+        if (al == null || al.size() < 3) {
             String sql = "select distinct category_id, count(distinct bus_id) as num from bus_table where route is null group by 1";
 
             HashMap<String, ArrayList<String>> receive;
-            receive = vehicleDifferentTypes(sql);        // CALLING
+            receive = vehicleDifferentTypes(sql);
             if(receive.isEmpty()) {
             	return false;
             }
-//            ArrayList<String> number = new ArrayList<>();
+
             ArrayList<String> typeBus = receive.get("typeOfVehicle");
             System.out.println();
             System.out.println("Enter the category number from above available category to assign the bus.");
-
             boolean flag = true;
-            
             Scanner input = new Scanner(System.in);
 
             while (flag) {
-            	
                 String categoryAllocate = input.nextLine();
-                
-                
                 String busNum;
 
                 if (typeBus.contains(categoryAllocate)) {
+                    busNum = this.AvailableBus(categoryAllocate);
+                    boolean isUploaded = allocateBus(busNum, route);
 
-                    busNum = this.AvailableBus(categoryAllocate); // CALLING
-
-                    boolean isUploaded = allocateBus(busNum, route);// CALLING
                     if (isUploaded)
                         System.out.println("Bus: " + busNum + " is allocated to the route: " + route);
                     flag = false;
@@ -168,7 +161,6 @@ public class BusMaster {
         }
         System.out.println();
 		return true;
-
     }
 
     public boolean ChangeBusTypeOfRoute(String route) throws SQLException {
@@ -176,6 +168,7 @@ public class BusMaster {
         ArrayList<String> al2;
         String sql = "select bus_id from bus_table where route =  '" + route + "' ";
         HashMap<String, ArrayList<String>> rec = BusesInRoute(route, sql);
+
         if(rec.isEmpty()) {
         	System.out.println("In this route there are zero buses.");
         	return false;
@@ -190,23 +183,23 @@ public class BusMaster {
         Scanner input = new Scanner(System.in);
         boolean error = true;
         int busSelection = 0;
+
         do {
             try {
             	System.out.print("Input: ");
                 input = new Scanner(System.in);
                 busSelection = input.nextInt();
-                if(busSelection != 1 && busSelection != 0 && busSelection != 2) {
-                	System.out.println("Wrong input");
-                	error=true;
-                }else {
-                	error=false;
+                if (busSelection != 1 && busSelection != 0 && busSelection != 2) {
+                    System.out.println("Wrong input");
+                    error = true;
+                } else {
+                    error = false;
                 }
-            } catch(InputMismatchException e) {
+            } catch (InputMismatchException e) {
                 System.out.println("Invalid Input 😞 only Integers allowed");
-                error=true;
+                error = true;
             }
-        } while(error);
-
+        } while (error);
 
         System.out.println("Enter the new category.");
         System.out.println("For 3-Seater enter: 3");
@@ -217,10 +210,13 @@ public class BusMaster {
         String sql1 = "Select distinct category_id from bus_table where route is null";
         ResultSet rs = sq.SqlSelectStatement(sql1);
         ArrayList<Integer> categoryIds = new ArrayList<>();
+
         while (rs.next()) {
             categoryIds.add(rs.getInt("category_id"));
         }
+
         boolean flagCat = true;
+
         while (flagCat) {
             int catSelection = 0;
             do {
@@ -228,12 +224,12 @@ public class BusMaster {
                     System.out.print("Input: ");
                     input = new Scanner(System.in);
                     catSelection = input.nextInt();
-                    error=false;
-                } catch(InputMismatchException e) {
+                    error = false;
+                } catch (InputMismatchException e) {
                     System.out.println("Invalid Input 😞 only Integers allowed");
-                    error=true;
+                    error = true;
                 }
-            } while(error);
+            } while (error);
 
             if (Integer.parseInt(al2.get(busSelection)) == catSelection) {
                 System.out.println("Bus belongs to same category. Please enter new category.");
@@ -242,18 +238,10 @@ public class BusMaster {
             } else if (!categoryIds.contains(catSelection)) {
                 System.out.println("Please enter some other category. As of now, we don't have bus of this categoty.");
             } else {
-                //check selected category bus without any route available ? if available allocate: 1. null->route 2 curr route ko null kar do if not ask him to choose other category.
-//                String SQL = "select distinct category_id, count(distinct bus_id) as num from bus_table where route is null group by 1";
-//                HashMap<String,ArrayList<String>> receive = VehicleDifferentTypes(SQL);    	// CALLING
-//                ArrayList<String> number = new ArrayList<>();
-//                ArrayList<String> typeBus = new ArrayList<>();
-//
-//                typeBus = receive.get("typeOfVehicle");
-//                number =  receive.get("countOfBuses");
                 System.out.println("Allocating bus of the category: " + catSelection);
+
                 String busNum = AvailableBus(Integer.toString(catSelection));
                 allocateBus(busNum, route);
-
                 allocateBus(al.get(busSelection), null);
                 SQLUpdate su = new SQLUpdate();
                 String tableName = "pass_details";
@@ -266,8 +254,6 @@ public class BusMaster {
             }
         }
 		return flagCat;
-
-
     }
 
     void registerBus() {
@@ -276,8 +262,10 @@ public class BusMaster {
         System.out.println("ThreeSeater Select 3 ");
         System.out.println("FiveSeater Select 5");
         System.out.println("SevenSeater Select 7");
+
         int choice = 0;
         boolean error;
+
         do {
             try {
                 System.out.print("Input: ");
@@ -294,6 +282,7 @@ public class BusMaster {
                 error = true;
             }
         } while (error);
+
         String regNumber = BasicUtility.regNumberCheck();
 
         switch (choice) {
@@ -322,21 +311,20 @@ public class BusMaster {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+
         if (vehNum.contains(ob.vehicleNumber)) {
             System.out.println("Vehicle already Registered with ATS");
-            
-        } 
-        else {
-        	SQLInsert si = new SQLInsert();
-        	HashMap<String, String> colValues = new HashMap<>();
-        	colValues.put("number_plate", ob.vehicleNumber);
-        	colValues.put("category_id", Integer.toString(ob.capacity));
-        	si.ExecuteInsert("bus_table", colValues);
-        	System.out.println("Vehicle Successfully Registered");
-        }
 
-                }
-            } 
+        } else {
+            SQLInsert si = new SQLInsert();
+            HashMap<String, String> colValues = new HashMap<>();
+            colValues.put("number_plate", ob.vehicleNumber);
+            colValues.put("category_id", Integer.toString(ob.capacity));
+            si.ExecuteInsert("bus_table", colValues);
+            System.out.println("Vehicle Successfully Registered");
+        }
+    }
+}
 
     
 

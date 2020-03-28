@@ -3,11 +3,6 @@ import java.sql.SQLException;
 import java.util.Map;
 
 public class SQLUpdate extends SQLMain {
-
-//    public SQLUpdate(Connection conn) {
-//        this.conn = conn;
-//    }
-
     String sql;
 
     public static String updateSQL(String tableName, Map<String, String> columnValueMappingForSet, Map<String, String> columnValueMappingForCondition) {
@@ -20,7 +15,6 @@ public class SQLUpdate extends SQLMain {
                 }
             }
         }
-
         /* Making the UPDATE Query */
         updateQueryBuilder.append("UPDATE");
         updateQueryBuilder.append(" ").append(tableName);
@@ -33,7 +27,6 @@ public class SQLUpdate extends SQLMain {
                 updateQueryBuilder.append(",");
             }
         }
-
         updateQueryBuilder = new StringBuilder(updateQueryBuilder.subSequence(0, updateQueryBuilder.length() - 1));
         updateQueryBuilder.append(" WHERE");
         updateQueryBuilder.append(" ");
@@ -51,7 +44,6 @@ public class SQLUpdate extends SQLMain {
     boolean ExecuteUpdate(String tableName, Map<String, String> columnValueMappingForSet, Map<String, String> columnValueMappingForCondition) {
         sql = updateSQL(tableName, columnValueMappingForSet, columnValueMappingForCondition);
 
-
         try (
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.executeUpdate();
@@ -60,7 +52,5 @@ public class SQLUpdate extends SQLMain {
             System.out.println(e.getMessage());
         }
         return false;
-
     }
-
 }

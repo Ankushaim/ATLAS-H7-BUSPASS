@@ -8,8 +8,7 @@ public class GuestRouteMaster extends RouteMaster {
 
     public void seatsOccupiedInRoute(Connection conn) throws SQLException {
         ArrayList<String> routes = null;
-        if (conn != null) // check
-        {
+        if (conn != null) {
             String sql = "select distinct route from route_info";
             try {
                 PreparedStatement stmt = conn.prepareStatement(sql);
@@ -23,11 +22,13 @@ public class GuestRouteMaster extends RouteMaster {
             }
 
             assert routes != null;
+
             for (String s : routes) {
                 String denominatorSQL = "select sum(category_id) as denom from bus_table where route = '" + s + "'";
                 SQLSelect sqlRun = new SQLSelect();
                 ResultSet rs = sqlRun.SqlSelectStatement(denominatorSQL);
                 double denominator = 0.0;
+
                 while (rs.next())
                     denominator = rs.getDouble("denom");
 
@@ -35,6 +36,7 @@ public class GuestRouteMaster extends RouteMaster {
                 SQLSelect sqlRun2 = new SQLSelect();
                 ResultSet rs2 = sqlRun2.SqlSelectStatement(NumeratorSQL);
                 double numerator = 0.0;
+
                 while (rs2.next())
                     numerator = rs2.getDouble("numer");
 

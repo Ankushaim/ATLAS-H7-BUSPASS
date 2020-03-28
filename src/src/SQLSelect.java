@@ -4,13 +4,9 @@ import java.sql.Statement;
 
 public class SQLSelect extends SQLMain {
 
-//    public SQLSelect(Connection conn) {
-//        this.conn = conn;
-//    }
-
     public ResultSet SqlSelectStatement(String sql) {
-
         ResultSet rs;
+
         if (conn != null) {
             try {
                 Statement stmt = conn.createStatement();

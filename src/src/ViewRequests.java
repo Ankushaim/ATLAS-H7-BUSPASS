@@ -1,4 +1,3 @@
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -7,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ViewRequests {
-
 
     public ArrayList<String> StopExistsInRoute(String stop) throws SQLException {
         String SQL = "select distinct route, stop from stop_info a join route_info b on a.stop = b.stops where stop = '" + stop + "'";
@@ -30,10 +28,12 @@ public class ViewRequests {
                 intlist.append("'").append(RoutesFromDB.get(count1)).append("',");
             }
         }
+
         String SQL2 = "Select bus_id, category_id from bus_table where route in (" + intlist + ")";
         SQLSelect sqlRun2 = new SQLSelect();
         ResultSet rs2 = sqlRun2.SqlSelectStatement(SQL2);
         HashMap<String, Integer> busCap = new HashMap<>();
+
         try {
             while (rs2.next()) {
                 busCap.put(rs2.getString("bus_id"), rs2.getInt("category_id"));
@@ -60,6 +60,7 @@ public class ViewRequests {
         SQLSelect sqlRun3 = new SQLSelect();
         ResultSet rs3 = sqlRun3.SqlSelectStatement(SQL3);
         HashMap<String, Integer> userInBus = new HashMap<>();
+
         try {
             while (rs3.next()) {
                 userInBus.put(rs3.getString("bus_id"), rs3.getInt("num"));
@@ -89,6 +90,7 @@ public class ViewRequests {
         String SQL = "select distinct route from bus_table where bus_id = '" + object + "'";
         ResultSet rs = sqlRun.SqlSelectStatement(SQL);
         String route = null;
+
         while (rs.next())
             route = rs.getString("route");
 
@@ -102,17 +104,18 @@ public class ViewRequests {
         System.out.println("Bus pass created for user: " + login);
         return isUploaded;
     }
+
     public void Notifications() {
         SQLSelect sqlRun = new SQLSelect();
         String SQL = "select distinct login from user_info where type = 'user' and status = 'PENDING'  ";
         ResultSet rs = sqlRun.SqlSelectStatement(SQL);
         ArrayList<String> pendingLogins = new ArrayList();
+
         try {
 			while (rs.next()) {
 			    pendingLogins.add(rs.getString("login"));
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         if(pendingLogins.size() != 0) {
@@ -124,6 +127,7 @@ public class ViewRequests {
     public boolean PendingBusPassRequests() throws SQLException {
         SQLSelect sqlRun = new SQLSelect();
         String SQL = "select login, stop from user_info where type = 'user' and status = 'PENDING' order by date(change_date) ";
+
         ResultSet rs = sqlRun.SqlSelectStatement(SQL);
         ArrayList<String> pendingLogins = new ArrayList();
         ArrayList<String> pendingStops = new ArrayList();
@@ -138,24 +142,27 @@ public class ViewRequests {
             String login = pendingLogins.get(count);
             String stop = pendingStops.get(count);
             ArrayList<String> RoutesFromDB = StopExistsInRoute(stop);
+
             if (RoutesFromDB.size() > 0) {
-                System.out.println("Fetching details for user: '" + login + "'"+"\n");
+                System.out.println("Fetching details for user: '" + login + "'" + "\n");
                 System.out.println("There are total: " + RoutesFromDB.size() + " route/s: " + RoutesFromDB + " for stop: " + stop + ".");
 
                 HashMap<String, Integer> busCap = ReturnBusCapacity(RoutesFromDB);
-                //System.out.println(busCap.keySet().toArray()[0]);
+
                 if (busCap.isEmpty()) {
-                    System.out.println("\n"+"No Bus Assign to this route");
-                    System.out.println("User: " + login + " request will remain in pending state as there is no bus assign"+"\n");
+                    System.out.println("\n" + "No Bus Assign to this route");
+                    System.out.println("User: " + login + " request will remain in pending state as there is no bus assign" + "\n");
                     continue;
                 }
-                HashMap<String, Integer> userInBus = UserOccupyingBus(busCap); // handle this
+                HashMap<String, Integer> userInBus = UserOccupyingBus(busCap);
+
                 if (userInBus.isEmpty()) {
                     GenerateBussPass(login, busCap.keySet().toArray()[0]);
-                    System.out.println("Bus Allocated"+"\n");                  
+                    System.out.println("Bus Allocated" + "\n");
                     continue;
                 }
                 boolean flag = true;
+
                 for (int count1 = 0; count1 < userInBus.size(); count1++)    // This for already occupied bus
                 {
                     int bus = busCap.get(userInBus.keySet().toArray()[count1]);
@@ -173,8 +180,7 @@ public class ViewRequests {
                 }
 
                 if(flag) {
-                    for(int count1 = 0; count1<busCap.size(); count1++)	// // This for allocating new bus
-                    {
+                    for (int count1 = 0; count1 < busCap.size(); count1++) {
                         int bus = busCap.get(busCap.keySet().toArray()[count1]);
                         int user = userInBus.getOrDefault(busCap.keySet().toArray()[count1], 0);
 
@@ -195,13 +201,4 @@ public class ViewRequests {
         }
         return true;
     }
-
-//    public static void main(String[] args) throws SQLException {
-//        Connection conn = JdbcConnect.connect();
-//    ViewRequests vr = new ViewRequests(conn);
-//    vr.PendingBusPassRequests();
-//
-//    }
-
-
 }

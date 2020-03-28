@@ -2,6 +2,7 @@ import java.sql.Connection;
 import java.util.Scanner;
 
 public abstract class Profile {
+
     static Connection conn = JdbcConnect.connect();
 
     static void pressAnyKeyToContinue() {

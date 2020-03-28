@@ -8,6 +8,7 @@ public class UserRouteMaster extends RouteMaster {
     void viewMyRoute(String userId, Connection conn) {
         String sql = "select distinct route from pass_details where login = '" + userId + "' ";
         String route = null;
+
         try {
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -18,8 +19,8 @@ public class UserRouteMaster extends RouteMaster {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-
         sql = "select distinct stops from route_info where route='" + route + "' ";
+
         try {
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();

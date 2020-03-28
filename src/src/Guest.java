@@ -7,26 +7,24 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Guest extends Profile {
-    //Connection conn = Profile.conn;
-    //Scanner input = new Scanner(System.in);
-    //UserRouteMaster userRoute = new UserRouteMaster();
 
     void printOptions() {
         System.out.print("\n" + "1. View All Routes: " + "\t");
         System.out.println("2. Percentage of seats occupied in each route: " + "\t");
-        System.out.print("3. SignUp and Apply for Bus Pass: " + "\t");
-        System.out.println("4. To previous Menu: " + "\t");
-        System.out.println("5. To Logout: " + "\t");
+        System.out.println("3. SignUp and Apply for Bus Pass: " + "\t");
+        System.out.println("4. To Logout: " + "\t");
     }
 
     void register() throws SQLException {
+        ArrayList<String> regDetails = new ArrayList<>();
         Scanner input = new Scanner(System.in);
+
         String sqlQuery = "INSERT INTO user_info(user_name, login, password, phone_num, address, city, status, type, create_date, change_date) values(?,?,?,?,?,?,?,?,?,?)";
         PreparedStatement pstIns = conn.prepareStatement(sqlQuery);
-
-        ArrayList<String> regDetails = new ArrayList<>();
         System.out.println("Create your ATS Account to continue to ATS");
+
         boolean flag = true;
+
         while (flag) {
             String name;
             do {
@@ -42,13 +40,13 @@ public class Guest extends Profile {
             }
             while (login.length() == 0);
 
-
             String password;
             do {
                 System.out.print("Password: ");
                 password = input.nextLine();
             }
             while (password.length() == 0);
+
             if (new Authentication().checkCredentials(login, password, "user"))  //To check is login already registered..
             {
                 System.out.println("User Already Exists");
@@ -90,6 +88,7 @@ public class Guest extends Profile {
             LocalDate localDate = LocalDate.now();
             regDetails.add(dtf.format(localDate));
             regDetails.add(dtf.format(localDate));
+
             int i = 1;
             for (String c : regDetails
             ) {
@@ -98,6 +97,7 @@ public class Guest extends Profile {
             }
             pstIns.executeUpdate();
             System.out.println("Registration Successful");
+
             UserRouteMaster userRoute = new UserRouteMaster();
             if (userRoute.selectStop(login)) {
                 System.out.println("Please wait for Admin's approval on your ATS pass request :-)");
@@ -113,8 +113,8 @@ public class Guest extends Profile {
         System.out.println("\n" + "Welcome Guest");
         printOptions();
         GuestRouteMaster guestRoute = new GuestRouteMaster();
-        boolean flag = true;
-        boolean error;
+        boolean flag = true, error;
+
         while (flag) {
             int choice = 0;
             do {
@@ -123,7 +123,7 @@ public class Guest extends Profile {
                     Scanner input = new Scanner(System.in);
                     choice = input.nextInt();
                     error = false;
-                }catch (InputMismatchException e)  {
+                } catch (InputMismatchException e) {
                     System.out.println("Invalid Input :-( only Integers allowed");
                     error = true;
                 }
@@ -160,9 +160,6 @@ public class Guest extends Profile {
                     break;
                 case 4:
                     flag = false;
-                    break;
-                case 5:
-                    System.exit(0);
                     break;
                 default:
                     System.out.println("Select valid activity to perform");

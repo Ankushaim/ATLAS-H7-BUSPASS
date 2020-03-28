@@ -33,12 +33,9 @@ public class User extends Profile {
         System.out.print("1. Edit or Change details: " + "\t");//done
         System.out.print("2. View all routes: " + "\t"); //done
         System.out.println("3. Show my route : " + "\t"); //done
-        System.out.print("4. Request to cancel the Bus Pass: " + "\t");
-        System.out.print("5. Request to suspend the pass: " + "\t");
-        System.out.println("6. Request for new route: " + "\t");
-        System.out.print("7. Print your pass: " + "\t");
-        System.out.println("8. go to previous Menu: " + "\t");
-        System.out.println("9. To logOut: ");
+        System.out.println("4. Request to cancel the Bus Pass: " + "\t");
+        System.out.println("7. Print your pass: " + "\t");
+        System.out.println("8. To logout: " + "\t");
     }
 
     void printOptionsUserDetailsMethod() {
@@ -89,6 +86,7 @@ public class User extends Profile {
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
+
                     if (check) {
                         System.out.println("Please wait for Admin's approval");
                         System.out.println("As the stop is changed your pass is temprory deactivted for Admin approval.");
@@ -132,6 +130,7 @@ public class User extends Profile {
     void printMyPass() {
         String sqlQuery1 = "SELECT pass_id, bus_id, route from pass_details WHERE login = ?";
         String sqlQuery2 = "SELECT stop, date(change_date) as change_date from user_info WHERE login = ? AND status = ?";
+
         try {
             PreparedStatement ps1 = conn.prepareStatement(sqlQuery1);
             PreparedStatement ps2 = conn.prepareStatement(sqlQuery2);
@@ -165,6 +164,7 @@ public class User extends Profile {
 
     void cancelPass(String login) {
         ArrayList<String> sql = new ArrayList<>();
+
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate localDate = LocalDate.now();
 
@@ -189,8 +189,8 @@ public class User extends Profile {
     void viewController() {
         System.out.println("\n" + "Welcome " + userName);
         printOptions();
-        boolean flag = true;
-        boolean error;
+        boolean flag = true, error;
+
         while (flag) {
             int choice = 0;
             do {
@@ -198,8 +198,8 @@ public class User extends Profile {
                     System.out.print("Input: ");
                     Scanner input = new Scanner(System.in);
                     choice = input.nextInt();
-                    error=false;
-                } catch(InputMismatchException e) {
+                    error = false;
+                } catch (InputMismatchException e) {
                     System.out.println("Invalid Input :-( only Integers allowed");
                     error=true;
                 }
@@ -238,9 +238,6 @@ public class User extends Profile {
                     break;
                 case 8:
                     flag = false;
-                    break;
-                case 9:
-                    System.exit(0);
                     break;
                 default:
                     System.out.print("Select valid activity to perform");
