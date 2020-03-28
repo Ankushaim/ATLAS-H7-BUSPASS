@@ -11,6 +11,7 @@ public class Admin extends Profile {
 
     public Admin(String userId) {
     	
+    	
         //this.conn = conn;
         if (conn != null) {
             String sql = "select user_name from user_info where login = ?";
@@ -71,10 +72,11 @@ public class Admin extends Profile {
 
     void viewController() {
         System.out.println("\n" + "Welcome " + adminName);
+        ViewRequests viewRequest = new ViewRequests();
+        viewRequest.Notifications();
         printOptions();
         BusMaster busMaster = new BusMaster();
-        AdminRouteMaster callingAdminRoute = new AdminRouteMaster();
-        ViewRequests viewRequest = new ViewRequests();
+        AdminRouteMaster callingAdminRoute = new AdminRouteMaster();      
         Scanner input;
         String route;
         boolean flag = true;
