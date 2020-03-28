@@ -102,6 +102,23 @@ public class ViewRequests {
         System.out.println("Bus pass created for user: " + login);
         return isUploaded;
     }
+    public void Notifications() {
+        SQLSelect sqlRun = new SQLSelect();
+        String SQL = "select distinct login from user_info where type = 'user' and status = 'PENDING'  ";
+        ResultSet rs = sqlRun.SqlSelectStatement(SQL);
+        ArrayList<String> pendingLogins = new ArrayList();
+        try {
+			while (rs.next()) {
+			    pendingLogins.add(rs.getString("login"));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        if(pendingLogins.size() != 0) {
+        	System.out.println("\n"+"Notifications: "+pendingLogins.size()+" pass requests");
+        }
+    }
 
 
     public boolean PendingBusPassRequests() throws SQLException {
@@ -111,33 +128,32 @@ public class ViewRequests {
         ArrayList<String> pendingLogins = new ArrayList();
         ArrayList<String> pendingStops = new ArrayList();
 
-        if (!rs.isBeforeFirst()) {
-            System.out.println("There are zero Pending Requests");
-        }
         while (rs.next()) {
             pendingLogins.add(rs.getString("login"));
             pendingStops.add(rs.getString("stop"));
         }
+        System.out.println("\n"+"There are total: "+pendingLogins.size()+" pending requests"+"\n");
 
         for (int count = 0; count < pendingLogins.size(); count++) {
             String login = pendingLogins.get(count);
             String stop = pendingStops.get(count);
             ArrayList<String> RoutesFromDB = StopExistsInRoute(stop);
             if (RoutesFromDB.size() > 0) {
-                System.out.println("Fetching details for user: '" + login + "'");
+                System.out.println("Fetching details for user: '" + login + "'"+"\n");
                 System.out.println("There are total: " + RoutesFromDB.size() + " route/s: " + RoutesFromDB + " for stop: " + stop + ".");
 
                 HashMap<String, Integer> busCap = ReturnBusCapacity(RoutesFromDB);
                 //System.out.println(busCap.keySet().toArray()[0]);
                 if (busCap.isEmpty()) {
-                    System.out.println("No Bus Assign to this route");
-                    return false;
+                    System.out.println("\n"+"No Bus Assign to this route");
+                    System.out.println("User: " + login + " request will remain in pending state as there is no bus assign"+"\n");
+                    continue;
                 }
                 HashMap<String, Integer> userInBus = UserOccupyingBus(busCap); // handle this
                 if (userInBus.isEmpty()) {
                     GenerateBussPass(login, busCap.keySet().toArray()[0]);
-                    System.out.println("Bus Allocated");
-                    return true;
+                    System.out.println("Bus Allocated"+"\n");                  
+                    continue;
                 }
                 boolean flag = true;
                 for (int count1 = 0; count1 < userInBus.size(); count1++)    // This for already occupied bus
@@ -152,7 +168,7 @@ public class ViewRequests {
                         GenerateBussPass(login, userInBus.keySet().toArray()[count1]);
                         break;
                     } else {
-                        System.out.println("User: "+login + " request will remain in pending state as there is no Capacity in any bus in the route");
+                        System.out.println("User: "+login + " request will remain in pending state as there is no Capacity in any bus in the route"+"\n");
                     }
                 }
 
@@ -173,7 +189,8 @@ public class ViewRequests {
                     }
                 }
             } else {
-                System.out.println("User: " + login + " request will remain in pending state as there are no active routes for mentioned stop");
+            	System.out.println("\n"+"Fetching details for user: '" + login + "'"+"\n");
+                System.out.println("User: " + login + " request will remain in pending state as there are no active routes for mentioned stop: "+stop+" \n");
             }
         }
         return true;
