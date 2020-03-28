@@ -58,24 +58,23 @@ public abstract class RouteMaster {
             } while (!directions.contains(direction));
 
             String sqlQuery2 = "select stop, direction from stop_info where direction ='"+direction+"'";
+            System.out.println("\nDirection - " + direction +"\nStop Name");
             try{
                 PreparedStatement pstSel2 = con.prepareStatement(sqlQuery2);
                 ResultSet rs2    = pstSel2.executeQuery();
-                System.out.println("\n");
                 while(rs2.next()) {
                     stops.add(rs2.getString("stop"));
-                    System.out.print("Stop Name -" + rs2.getString("stop"));
-                    System.out.println(":: Direction -" + rs2.getString("direction"));
+                    System.out.print("- -" + rs2.getString("stop"));
                 }
             }catch (SQLException e) { System.out.println(e.getMessage());}
 
-            System.out.print("Enter Stop Name: ");
+            System.out.print("\nEnter Stop Name: ");
             String stopname;
             do {
                 stopname = input.next().toUpperCase();
                 if (!stops.contains(stopname))
                 {
-                    System.out.print("Invalid Input. Please select Valid stop name: ");
+                    System.out.println("Invalid Input. Please select Valid stop name: ");
                 }
             } while (!stops.contains(stopname));
 
