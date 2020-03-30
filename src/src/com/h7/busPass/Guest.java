@@ -1,4 +1,12 @@
+/*
+  This is the Guest class which will be responsible to call other Guest specific methods and
+  print Guest menu..
+  @author (Ankush)
+ * @version (Java 8)
+ */
+
 package com.h7.busPass;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -9,6 +17,7 @@ import java.util.Scanner;
 
 public class Guest extends Profile {
 
+    @Override
     void printOptions() {
         System.out.print("\n" + "1. View All Routes: " + "\t");
         System.out.println("2. Percentage of seats occupied in each route: " + "\t");
@@ -16,7 +25,12 @@ public class Guest extends Profile {
         System.out.println("4. To Logout: " + "\t");
     }
 
+    /*
+     * This method will allow guest/visitor to signUp and apply for bus pass
+     */
     void register() throws SQLException {
+        /*AL is used to store all the signup specific details because of AL's growable nature, if
+        any future changes to the signup parameters*/
         ArrayList<String> regDetails = new ArrayList<>();
         Scanner input = new Scanner(System.in);
 
@@ -83,13 +97,15 @@ public class Guest extends Profile {
             regDetails.add(city);
 
             regDetails.add("PENDING"); // to set application in pending..
-            regDetails.add("user");
+            regDetails.add("user"); // to set profile as user only
 
+            //To take system date and change it to required type for database
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate localDate = LocalDate.now();
             regDetails.add(dtf.format(localDate));
             regDetails.add(dtf.format(localDate));
 
+            //Loops to extract details from AL and set it to prepared statement
             int i = 1;
             for (String c : regDetails
             ) {
@@ -99,6 +115,7 @@ public class Guest extends Profile {
             pstIns.executeUpdate();
             System.out.println("Registration Successful");
 
+            // Allow use to select specific avaiable stop from database
             UserRouteMaster userRoute = new UserRouteMaster();
             if (userRoute.selectStop(login)) {
                 System.out.println("Please wait for Admin's approval on your ATS pass request :-)");
@@ -110,6 +127,7 @@ public class Guest extends Profile {
         }
     }
 
+    @Override
     void viewController() {
         System.out.println("\n" + "Welcome Guest");
         printOptions();
@@ -118,6 +136,7 @@ public class Guest extends Profile {
 
         while (flag) {
             int choice = 0;
+            // this loop will check for invalid input. And will prompt the again to provide valid input only..
             do {
                 try {
                     System.out.print("Input: ");
@@ -128,15 +147,15 @@ public class Guest extends Profile {
                     System.out.println("Invalid Input :-( only Integers allowed");
                     error = true;
                 }
-            }while(error);
+            } while (error);
 
             switch (choice) {
                 case 1:
-					try {
-						guestRoute.viewAllRoutes();
-					} catch (SQLException e1) {
-						e1.printStackTrace();
-					}
+                    try {
+                        guestRoute.viewAllRoutes();
+                    } catch (SQLException e1) {
+                        e1.printStackTrace();
+                    }
                     pressAnyKeyToContinue();
                     printOptions();
                     break;

@@ -1,4 +1,12 @@
+/*
+  This is the Admin class which will be responsible to call other admin specific methods and
+  print admin menu..
+  @author (Ankush)
+ * @version (Java 8)
+ */
+
 package com.h7.busPass;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,8 +16,9 @@ import java.util.Scanner;
 
 public class Admin extends Profile {
     String userId;
-    String adminName = null;
+    String adminName;
 
+    // constructor of Admin class
     public Admin(String userId) {
         if (conn != null) {
             String sql = "select user_name from user_info where login = ?";
@@ -18,16 +27,17 @@ public class Admin extends Profile {
                 pstSel.setString(1, userId);
                 ResultSet rs = pstSel.executeQuery();
                 while (rs.next())
-                    this.adminName = rs.getString("user_name");
+                    this.adminName = rs.getString("user_name");// initializing class variable
                 rs.close();
                 pstSel.close();
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
         }
-        this.userId = userId;
+        this.userId = userId;// initializing class variable
     }
 
+    @Override
     void printOptions() {
         System.out.println();
         System.out.print("1. View Requests: " + "\t");
@@ -40,6 +50,9 @@ public class Admin extends Profile {
         System.out.println("8. To Logout: " + "\t");
     }
 
+    /*
+     * This method will take route input from user and validate it..
+     */
     String UserRouteValue() {
         ArrayList<String> routes = new ArrayList<>();
         Scanner input = new Scanner(System.in);
@@ -68,12 +81,16 @@ public class Admin extends Profile {
         return route;
     }
 
+    @Override
     void viewController() {
         System.out.println("\n" + "Welcome " + adminName);
         AdminRouteMaster callingAdminRoute = new AdminRouteMaster();
         ViewRequests viewRequest = new ViewRequests();
         BusMaster busMaster = new BusMaster();
 
+        /*
+         * This method prints the available notification(pass requests) to admin menu
+         */
         viewRequest.Notifications();
         printOptions();
 
@@ -83,6 +100,7 @@ public class Admin extends Profile {
 
         while (flag) {
             int choice = 0;
+            // this loop will check for invalid input. And will prompt the again to provide valid input only..
             do {
                 try {
                     System.out.print("Input: ");
@@ -102,16 +120,15 @@ public class Admin extends Profile {
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
-                    pressAnyKeyToContinue();
+                    pressAnyKeyToContinue();// This method will hold the output screen for user..
                     printOptions();
                     break;
                 case 2:
-					try {
-						callingAdminRoute.addNewRoute();
-					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+                    try {
+                        callingAdminRoute.addNewRoute();
+                    } catch (SQLException e1) {
+                        e1.printStackTrace();
+                    }
                     pressAnyKeyToContinue();
                     printOptions();
                     break;

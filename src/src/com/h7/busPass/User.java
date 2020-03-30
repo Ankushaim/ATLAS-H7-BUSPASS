@@ -1,4 +1,12 @@
+/*
+  This is the User class which will be responsible to call other User specific methods and
+  print User menu..
+  @author (Ankush)
+ * @version (Java 8)
+ */
+
 package com.h7.busPass;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,6 +19,7 @@ public class User extends Profile {
     String userName = null;
     UserRouteMaster userRoute = new UserRouteMaster();
 
+    // constructor of User class
     User(String userId) {
         if (conn != null) {
             String sql = "select user_name from user_info where login = ?";
@@ -19,16 +28,17 @@ public class User extends Profile {
                 pstSel.setString(1, userId);
                 ResultSet rs = pstSel.executeQuery();
                 while (rs.next())
-                    this.userName = rs.getString("user_name");
+                    this.userName = rs.getString("user_name");// initializing class variable
                 rs.close();
                 pstSel.close();
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
         }
-        this.userId = userId;
+        this.userId = userId;// initializing class variable
     }
 
+    @Override
     void printOptions() {
         System.out.println();
         System.out.print("1. Edit or Change details: " + "\t");//done
@@ -39,6 +49,9 @@ public class User extends Profile {
         System.out.println("8. To logout: " + "\t");
     }
 
+    /*
+     * This method will be called internally by updateUserDetails..
+     */
     void printOptionsUserDetailsMethod() {
         System.out.println();
         System.out.println("Select Details to Update");
@@ -50,7 +63,13 @@ public class User extends Profile {
         System.out.println("6. go to previous Menu: ");
     }
 
+    /*
+     * This method will allow user to update user specific profile data..
+     */
     void updateUserDetails() {
+        /* Map is used to store requested changes in the form of key and pair which will help to form
+         * SQL statement..
+         */
         HashMap<String, String> userDetails = new HashMap<>();
         printOptionsUserDetailsMethod();
         boolean flag = true;
@@ -128,6 +147,9 @@ public class User extends Profile {
         }
     }
 
+    /*
+     * This method will print pass details for user..
+     */
     void printMyPass() {
         String sqlQuery1 = "SELECT pass_id, bus_id, route from pass_details WHERE login = ?";
         String sqlQuery2 = "SELECT stop, date(change_date) as change_date from user_info WHERE login = ? AND status = ?";
@@ -163,6 +185,7 @@ public class User extends Profile {
         }
     }
 
+
     void cancelPass(String login) {
         ArrayList<String> sql = new ArrayList<>();
 
@@ -187,6 +210,7 @@ public class User extends Profile {
         System.out.println("Pass Canceled for :" + login + "\n");
     }
 
+    @Override
     void viewController() {
         System.out.println("\n" + "Welcome " + userName);
         printOptions();
@@ -202,9 +226,9 @@ public class User extends Profile {
                     error = false;
                 } catch (InputMismatchException e) {
                     System.out.println("Invalid Input :-( only Integers allowed");
-                    error=true;
+                    error = true;
                 }
-            } while(error);
+            } while (error);
 
             switch (choice) {
                 case 1:
@@ -213,11 +237,11 @@ public class User extends Profile {
                     printOptions();
                     break;
                 case 2:
-					try {
-						userRoute.viewAllRoutes();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
+                    try {
+                        userRoute.viewAllRoutes();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                     pressAnyKeyToContinue();
                     printOptions();
                     break;
