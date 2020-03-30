@@ -1,4 +1,4 @@
-/**
+/*
  * This is the Main class which will run the application and will be responsible to call other methods
  * in project..
  *
