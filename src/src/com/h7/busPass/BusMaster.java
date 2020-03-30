@@ -1,3 +1,4 @@
+package com.h7.busPass;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -9,7 +10,9 @@ import java.util.Scanner;
 public class BusMaster {
 
     Scanner input = new Scanner(System.in);
-
+    
+  //This method is internally called by AddBusInRoute: To check in the current route how many buses are there as our assumption here is only 3 buses can be there in a route.
+  //and, this method is also internally called by ChangeBusTypeOfRoute: To check in the current route how many buses are there
     public HashMap<String, ArrayList<String>> BusesInRoute(String route, String sql) throws SQLException {
 
         ArrayList<String> al = new ArrayList<>();
@@ -47,7 +50,8 @@ public class BusMaster {
         send.put("category", al2);
         return send;
     }
-
+    
+  //This method is internally called by AddBusInRoute: To check how many buses are available and what are there types like 3,5 or 7 seater
     public HashMap<String, ArrayList<String>> vehicleDifferentTypes(String SQL) throws SQLException {
 
         ArrayList<String> number = new ArrayList<>();
@@ -95,6 +99,8 @@ public class BusMaster {
         return busNum;
     }
 
+    
+  //This method is internally called by AddBusInRoute: To allocate the selected bus by admin to the route.  
     boolean allocateBus(String busNum, String route) {
         HashMap<String, String> colValues = new HashMap<>();
         HashMap<String, String> where = new HashMap<>();
@@ -114,13 +120,20 @@ public class BusMaster {
         isUploaded = su.ExecuteUpdate(tableName, colValues, where);
         return isUploaded;
     }
-
+    
+    
+ /* AddBusInRoute method is a functionality of Admin. To add available bus in any route with various checks like.
+  * 1. To check in the current route how many buses are there as our assumption here is only 3 buses can be there in a route. If no bus or lesser than three buses than got to next step.
+  * 2. To check how many buses are available and what are there types like 3,5 or 7 seater
+  * 3. At last allocate the selected bus by admin to the route.   
+  */
     public boolean AddBusInRoute(String route) throws SQLException {
         ArrayList<String> al = null;
         HashMap<String, ArrayList<String>> rec;
 
         String sql1 = "select bus_id from bus_table where route =  '" + route + "' ";
-        rec = BusesInRoute(route, sql1); // To check How many busses are there in route asked by user CALLING
+        //1. To check in the current route how many buses are there as our assumption here is only 3 buses can be there in a route
+        rec = BusesInRoute(route, sql1); 
 
         if (!rec.isEmpty()) {
             al = rec.get("numberPlate");
@@ -130,6 +143,8 @@ public class BusMaster {
             String sql = "select distinct category_id, count(distinct bus_id) as num from bus_table where route is null group by 1";
 
             HashMap<String, ArrayList<String>> receive;
+            
+            //2. To check in how many are the available buses and what are there types like 3,5 or 7 seater
             receive = vehicleDifferentTypes(sql);
             if(receive.isEmpty()) {
             	return false;
@@ -147,6 +162,7 @@ public class BusMaster {
 
                 if (typeBus.contains(categoryAllocate)) {
                     busNum = this.AvailableBus(categoryAllocate);
+                    //3. At last allocate the selected bus by admin to the route.   
                     boolean isUploaded = allocateBus(busNum, route);
 
                     if (isUploaded)
@@ -163,10 +179,17 @@ public class BusMaster {
 		return true;
     }
 
+/*ChangeBusTypeOfRoute method is a functionality of Admin.
+ * 1. To check in the current route how many buses are there.  
+ * 2. select the bus to change type.
+ * 3. change only if selection is 3,5 or 7 seater as category and if selection bus is available with Amazon.  
+ */
+
     public boolean ChangeBusTypeOfRoute(String route) throws SQLException {
         ArrayList<String> al;
         ArrayList<String> al2;
         String sql = "select bus_id from bus_table where route =  '" + route + "' ";
+        //1. To check in the current route how many buses are there.  
         HashMap<String, ArrayList<String>> rec = BusesInRoute(route, sql);
 
         if(rec.isEmpty()) {
@@ -179,7 +202,7 @@ public class BusMaster {
 
         System.out.println();
         System.out.println("Enter the line number of the bus to change the type.");
-
+        //2. select the bus to change type.
         Scanner input = new Scanner(System.in);
         boolean error = true;
         int busSelection = 0;
@@ -230,7 +253,7 @@ public class BusMaster {
                     error = true;
                 }
             } while (error);
-
+            //3. change only if selection is 3,5 or 7 seater as category and if selected bus is available with Amazon.  
             if (Integer.parseInt(al2.get(busSelection)) == catSelection) {
                 System.out.println("Bus belongs to same category. Please enter new category.");
             } else if (catSelection != 3 && catSelection != 5 && catSelection != 7) {
@@ -244,6 +267,8 @@ public class BusMaster {
                 allocateBus(busNum, route);
                 allocateBus(al.get(busSelection), null);
                 SQLUpdate su = new SQLUpdate();
+                
+                // Update the pass detail of all the users from the current to new bus with new category 3,5 or 7 seater
                 String tableName = "pass_details";
                 HashMap<String, String> columnValueMappingForSet = new HashMap<>();
                 HashMap<String, String> columnValueMappingForCondition = new HashMap<>();

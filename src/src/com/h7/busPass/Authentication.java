@@ -1,6 +1,9 @@
+package com.h7.busPass;
 import java.sql.ResultSet;
 
 public class Authentication {
+	
+	//This method is used by Admin and User: To check if they are valid users of the software.
     boolean checkCredentials(String log, String pass, String type) {
 
         String sql = "select login, password, type from user_info where login = '" + log + "' ";
