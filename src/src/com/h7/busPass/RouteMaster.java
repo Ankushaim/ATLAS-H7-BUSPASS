@@ -101,7 +101,7 @@ public abstract class RouteMaster {
             } while (!stops.contains(stopname));
             
             //updates user's stop name in user_info table and changes his status to Pending for Admin to review the new request
-//            sql = "UPDATE user_info SET stop ='"+stopname+"', status='PENDING' WHERE login ='"+login+"' ";
+            //update query being implemented--> "UPDATE user_info SET stop ='"+stopname+"', status='PENDING' WHERE login ='"+login+"' ";
             
             SQLUpdate su = new SQLUpdate();
             HashMap<String, String> colValues = new HashMap<>();
