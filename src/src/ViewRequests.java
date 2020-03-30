@@ -18,7 +18,7 @@ public class ViewRequests {
         return RoutesFromDB;
     }
 
-    public HashMap<String, Integer> ReturnBusCapacity(ArrayList<String> RoutesFromDB) throws SQLException {
+    public HashMap<String, Integer> ReturnBusCapacity(ArrayList<String> RoutesFromDB) {
         StringBuilder intlist = new StringBuilder();
 
         for (int count1 = 0; count1 < RoutesFromDB.size(); count1++) {
@@ -41,11 +41,10 @@ public class ViewRequests {
         } catch (Exception e) {
             return busCap;
         }
-        ;
         return busCap;
     }
 
-    public HashMap<String, Integer> UserOccupyingBus(HashMap<String, Integer> busCap) throws SQLException {
+    public HashMap<String, Integer> UserOccupyingBus(HashMap<String, Integer> busCap) {
         StringBuilder busses = new StringBuilder();
 
         for (int count1 = 0; count1 < busCap.size(); count1++) {
@@ -68,7 +67,6 @@ public class ViewRequests {
         } catch (Exception e) {
             return userInBus;
         }
-        ;
         return userInBus;
     }
 

@@ -134,7 +134,6 @@ public class Guest extends Profile {
 					try {
 						guestRoute.viewAllRoutes();
 					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
                     pressAnyKeyToContinue();

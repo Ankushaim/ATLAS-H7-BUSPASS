@@ -215,7 +215,6 @@ public class User extends Profile {
 					try {
 						userRoute.viewAllRoutes();
 					} catch (SQLException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
                     pressAnyKeyToContinue();

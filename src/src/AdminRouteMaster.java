@@ -73,7 +73,6 @@ public class AdminRouteMaster extends RouteMaster {
         try {
 			routes= viewAllRoutes();
 		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
@@ -91,7 +90,6 @@ public class AdminRouteMaster extends RouteMaster {
 					    return false;
 					}rs.close();
 				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
                 
@@ -105,7 +103,6 @@ public class AdminRouteMaster extends RouteMaster {
               }
               rs.close();
           } catch (SQLException e1) {
-			// TODO Auto-generated catch block
               e1.printStackTrace();
           }
         System.out.println("Route is not in use. Delete will be executed");
