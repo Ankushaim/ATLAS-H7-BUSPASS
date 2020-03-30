@@ -1,3 +1,4 @@
+package com.h7.busPass;
 import java.sql.ResultSet;
 
 public class Authentication {

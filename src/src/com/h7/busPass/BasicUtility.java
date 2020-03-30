@@ -1,3 +1,4 @@
+package com.h7.busPass;
 import java.util.Scanner;
 
 public class BasicUtility {

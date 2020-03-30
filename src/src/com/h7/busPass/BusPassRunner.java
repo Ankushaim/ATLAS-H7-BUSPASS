@@ -1,3 +1,4 @@
+package com.h7.busPass;
 import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
