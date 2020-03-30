@@ -1,11 +1,11 @@
 package com.h7.busPass;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Scanner;
-
 
 public class BusMaster {
 

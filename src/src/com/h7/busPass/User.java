@@ -185,7 +185,9 @@ public class User extends Profile {
         }
     }
 
-
+    /*
+     * This method will cancel the  user pass..
+     */
     void cancelPass(String login) {
         ArrayList<String> sql = new ArrayList<>();
 

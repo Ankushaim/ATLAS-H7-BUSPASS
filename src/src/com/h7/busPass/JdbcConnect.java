@@ -1,10 +1,18 @@
+/*
+ * This class will be responsible to create a JDBC connection for the MYSQL database..
+ * @author (Ankush)
+ * @version (Java 8)
+ */
+
 package com.h7.busPass;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class JdbcConnect {
-	//This method to create JDBC connection object once and used by other methods wherever required. 
+
+    //This method to create JDBC connection object once and used by other methods wherever required.
     public static Connection connect() {
         Connection conn = null;
         try {

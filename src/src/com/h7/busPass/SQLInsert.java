@@ -1,4 +1,5 @@
 package com.h7.busPass;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
@@ -45,18 +46,18 @@ public class SQLInsert extends SQLMain {
         return insertSQLBuilder.toString();
     }
 
-/*ExecuteInsert method is used by lots of other method to insert data in any table of database.
- * To achieve insertion in any table we used HASH MAP data structure. Where "Key" is the "column name" and "Value" is the "data" of the column.
- * 1. FIrstly, generate SQL syntax call  insertSQL.
- * 2. Execute the generated SQL   
- */
+    /*ExecuteInsert method is used by lots of other method to insert data in any table of database.
+     * To achieve insertion in any table we used HASH MAP data structure. Where "Key" is the "column name" and "Value" is the "data" of the column.
+     * 1. FIrstly, generate SQL syntax call  insertSQL.
+     * 2. Execute the generated SQL
+     */
     boolean ExecuteInsert(String tableName, Map<String, String> columnValueMappingForSet) {
-    	//1. FIrstly, generate SQL syntax. Call insertSQL.
+        //1. FIrstly, generate SQL syntax. Call insertSQL.
         sql = insertSQL(tableName, columnValueMappingForSet);
 
         try (
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
-        	//2. Execute the generated SQL  
+            //2. Execute the generated SQL
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {
