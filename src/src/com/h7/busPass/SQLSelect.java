@@ -4,7 +4,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class SQLSelect extends SQLMain {
-
+	
+	//SqlSelectStatement method is used to fetch data from database. Any method in the project can call this method to extract data from database.
     public ResultSet SqlSelectStatement(String sql) {
         ResultSet rs;
 

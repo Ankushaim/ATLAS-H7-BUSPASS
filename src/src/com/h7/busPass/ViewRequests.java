@@ -6,8 +6,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+
 public class ViewRequests {
 
+	//This method is internally called by PendingBusPassRequests: To check: Stop exist in Route. If selected stop by user is in route than go to next step else user stay in pending state
     public ArrayList<String> StopExistsInRoute(String stop) throws SQLException {
         String SQL = "select distinct route, stop from stop_info a join route_info b on a.stop = b.stops where stop = '" + stop + "'";
         SQLSelect sqlRun = new SQLSelect();
@@ -18,7 +20,8 @@ public class ViewRequests {
         }
         return RoutesFromDB;
     }
-
+    
+    //This method is internally called by PendingBusPassRequests: To Check If Routes has any allocated bus? If yes get all the buses with their seater type else go to next user
     public HashMap<String, Integer> ReturnBusCapacity(ArrayList<String> RoutesFromDB) throws SQLException {
         StringBuilder intlist = new StringBuilder();
 
@@ -45,7 +48,8 @@ public class ViewRequests {
         ;
         return busCap;
     }
-
+    
+    //This method is internally called by PendingBusPassRequests: To check seats are available in the busses?
     public HashMap<String, Integer> UserOccupyingBus(HashMap<String, Integer> busCap) throws SQLException {
         StringBuilder busses = new StringBuilder();
 
@@ -72,7 +76,8 @@ public class ViewRequests {
         ;
         return userInBus;
     }
-
+    
+    //This method is internally called by PendingBusPassRequests: to generate the pass i.e. enter the details in pass_details and user_info table
     boolean GenerateBussPass(String login, Object object) throws SQLException {
         SQLUpdate su = new SQLUpdate();
         HashMap<String, String> colValues = new HashMap<>();
@@ -105,7 +110,8 @@ public class ViewRequests {
         System.out.println("Bus pass created for user: " + login);
         return isUploaded;
     }
-
+    
+    //This method act as notification for the Admin. To inform him about the pending user requests when he logins.
     public void Notifications() {
         SQLSelect sqlRun = new SQLSelect();
         String SQL = "select distinct login from user_info where type = 'user' and status = 'PENDING'  ";
@@ -124,11 +130,21 @@ public class ViewRequests {
         }
     }
 
-
+/*
+ * PendingBusPassRequests method helps Admin to view pending requests. Pending here means status of user as "PENDING" in user_info table. 
+ * Status changed to Pending 1. when new user is created. 2. if existing user change the stop.
+ * Now, this method works in various steps.
+ * 1. To get the list of all the users and their selected stops. Run loop to approve/reject the user request based on checks.
+ * 2. Check: Stop exist in Route: method: StopExistsInRoute. If selected stop by user is in route than go to next step else user stay in pending state
+ * 3. Check If Routes has any allocated bus? If yes get all the buses with their seater type else go to next user.
+ * 4. Check seats are available in the busses? If yes go to next step else go to next user.
+ * 5. At last Allocate the bus to user and generate the pass i.e. enter the details in pass_details and user_info table
+ */
     public boolean PendingBusPassRequests() throws SQLException {
         SQLSelect sqlRun = new SQLSelect();
         String SQL = "select login, stop from user_info where type = 'user' and status = 'PENDING' order by date(change_date) ";
-
+        
+        //1. To get the list of all the users and their selected stops.
         ResultSet rs = sqlRun.SqlSelectStatement(SQL);
         ArrayList<String> pendingLogins = new ArrayList();
         ArrayList<String> pendingStops = new ArrayList();
@@ -142,12 +158,14 @@ public class ViewRequests {
         for (int count = 0; count < pendingLogins.size(); count++) {
             String login = pendingLogins.get(count);
             String stop = pendingStops.get(count);
+            //2. Check: Stop exist in Route: method: StopExistsInRoute
             ArrayList<String> RoutesFromDB = StopExistsInRoute(stop);
 
             if (RoutesFromDB.size() > 0) {
                 System.out.println("Fetching details for user: '" + login + "'" + "\n");
                 System.out.println("There are total: " + RoutesFromDB.size() + " route/s: " + RoutesFromDB + " for stop: " + stop + ".");
-
+                
+                //3.Check If Routes has any allocated bus?
                 HashMap<String, Integer> busCap = ReturnBusCapacity(RoutesFromDB);
 
                 if (busCap.isEmpty()) {
@@ -155,6 +173,8 @@ public class ViewRequests {
                     System.out.println("User: " + login + " request will remain in pending state as there is no bus assign" + "\n");
                     continue;
                 }
+                
+                //4. Check seats are available in the busses? If yes go to next step else go to next user.
                 HashMap<String, Integer> userInBus = UserOccupyingBus(busCap);
 
                 if (userInBus.isEmpty()) {
@@ -162,9 +182,9 @@ public class ViewRequests {
                     System.out.println("Bus Allocated" + "\n");
                     continue;
                 }
-                boolean flag = true;
-
-                for (int count1 = 0; count1 < userInBus.size(); count1++)    // This for already occupied bus
+                boolean flag = true; 
+                
+                for (int count1 = 0; count1 < userInBus.size(); count1++)    // This is to allocate bus which already has users in it and have empty seats
                 {
                     int bus = busCap.get(userInBus.keySet().toArray()[count1]);
                     int user = userInBus.getOrDefault(userInBus.keySet().toArray()[count1], 0);
@@ -181,7 +201,7 @@ public class ViewRequests {
                 }
 
                 if(flag) {
-                    for (int count1 = 0; count1 < busCap.size(); count1++) {
+                    for (int count1 = 0; count1 < busCap.size(); count1++) { // This is to allocate NEW bus when there is no empty seats in current buses of the route 
                         int bus = busCap.get(busCap.keySet().toArray()[count1]);
                         int user = userInBus.getOrDefault(busCap.keySet().toArray()[count1], 0);
 

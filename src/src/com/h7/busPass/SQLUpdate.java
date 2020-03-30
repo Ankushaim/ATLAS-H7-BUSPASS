@@ -6,6 +6,7 @@ import java.util.Map;
 public class SQLUpdate extends SQLMain {
     String sql;
 
+ // updateSQL is internally called by ExecuteInsert: To generate SQL Syntax
     public static String updateSQL(String tableName, Map<String, String> columnValueMappingForSet, Map<String, String> columnValueMappingForCondition) {
         StringBuilder updateQueryBuilder = new StringBuilder();
 
@@ -42,11 +43,18 @@ public class SQLUpdate extends SQLMain {
         return updateQueryBuilder.toString();
     }
 
+    /*ExecuteUpdate method is used by lots of other method to update data in any table of database.
+     * To achieve updation in any table we used HASH MAP data structure. Where "Key" is the "column name" and "Value" is the "data" of the column.
+     * 1. FIrstly, generate SQL syntax call  SQLUpdate.
+     * 2. Execute the generated SQL   
+     */    
     boolean ExecuteUpdate(String tableName, Map<String, String> columnValueMappingForSet, Map<String, String> columnValueMappingForCondition) {
-        sql = updateSQL(tableName, columnValueMappingForSet, columnValueMappingForCondition);
+    	//1. FIrstly, generate SQL syntax. Call  SQLUpdate.
+    	sql = updateSQL(tableName, columnValueMappingForSet, columnValueMappingForCondition);
 
         try (
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        	//2. Execute the generated SQL   
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {
