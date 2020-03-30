@@ -97,10 +97,11 @@ public abstract class RouteMaster {
                     System.out.println("Invalid Input. Please select Valid stop name: ");
                 }
             } while (!stops.contains(stopname));
+            input.close();
             
-            //updates user's stop name in user_info table and changes his status to Pending for Admin to review the new request
-            //update query being implemented--> "UPDATE user_info SET stop ='"+stopname+"', status='PENDING' WHERE login ='"+login+"' ";
-            
+            /*updates user's stop name in user_info table and changes his status to Pending for Admin to review the new request
+             *update query being implemented--> "UPDATE user_info SET stop ='"+stopname+"', status='PENDING' WHERE login ='"+login+"' ";
+             */            
             SQLUpdate su = new SQLUpdate();
             HashMap<String, String> colValues = new HashMap<>();
             HashMap<String, String> where = new HashMap<>();
